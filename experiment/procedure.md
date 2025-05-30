@@ -1,36 +1,46 @@
 ### Procedure
 
-This experiment aims to show the emergence of Poisson Process from the Repeated Bernoulli Trials by setting the number of trials very large. The binomial distribution works when we have a fixed number of events n, each with a constant probability of success p. Imagine we don’t know the number of trials that will happen. Instead, we only know the average number of successes per time period. So we know the rate of successes per day, but not the number of trials n or the probability of success p that led to that rate. Define a number λ =np. Let this be the rate of successes per day. It’s equal to np. That’s the number of trials n — however many there are — times the chance of success p for each of those trials. Your Job is to change the value of n from a small value (where the plot should look like Bernoulli), and keep on increasing it (where it transforms to Poisson for the chosen value of λ).
+#### **Emergence of Poisson Process**
 
-Next we demonstrate the splitting and merging of the poisson process, using radioactive emitters. Average rate of an emmitter be say λ1 and another be say λ2. Now if we merge them we get a new rate of λ1+λ2. Simmilarly, if we split it again we get the rates of λ1 and λ2 seperately.
----
+This experiment demonstrates how a **Poisson Process** emerges from **Repeated Bernoulli Trials** by gradually increasing the number of trials \( n \). The **Binomial distribution** applies when we have a fixed number of events \( n \), each with a constant probability of success \( p \). But what if we don’t know the number of trials? Instead, we know the **average rate of success per unit time**, denoted as:
 
-#### Part 1: Basic Poisson Process Simulation
+\[
+\lambda = n \cdot p
+\]
 
-- Simulate a single radioactive source emitting particles over multiple time intervals.
-- Use a Poisson distribution with a fixed rate \( \lambda \) to generate counts.
-- Plot the number of particles per interval on a histogram.
+Here, \( \lambda \) is the **rate of successes per time unit**. As \( n \to \infty \) and \( p \to 0 \), while keeping \( \lambda \) constant, the **Binomial distribution converges to a Poisson distribution**.
 
-**Expected Observation**: The histogram should show a typical Poisson-distributed spread centered around \( \lambda \).
-
----
-
-#### Part 2: Splitting and Merging the Poisson Process
-
-- Take the events from the single Poisson source and randomly assign each to one of two categories (Source A and Source B).
-- This simulates **splitting** the process, where each sub-source independently emits with reduced rate \( \lambda_1 \) and \( \lambda_2 \), such that \( \lambda_1 + \lambda_2 = \lambda \).
-- Visualize both sub-processes separately.
-
-**Expected Observation**: Each new source behaves like a Poisson process with its own rate.
+Your task is to:
+1. **Start with a small value of \( n \)** — the distribution should resemble a Bernoulli/Binomial behavior.
+2. **Gradually increase \( n \)** while keeping \( \lambda \) fixed — observe how the distribution transforms into a **Poisson distribution**.
 
 ---
 
-#### Part 3: Exponential THingy of Poisson Processes
+#### **Merging and Splitting of Poisson Processes**
 
-- Simulate two independent Poisson sources (A and B) with known rates \( \lambda_1 \) and \( \lambda_2 \).
-- Merge the results by summing particle counts from both sources at each interval.
-- Visualize the merged process.
+Next, we demonstrate the **superposition (merging)** and **splitting** of Poisson processes using an analogy of radioactive emitters. We have 2 emitters with average rates which can be adjusted.
 
-**Expected Observation**: The combined process behaves like a Poisson process with rate \( \lambda = \lambda_1 + \lambda_2 \).
+- Let two independent emitters have average rates \( \lambda_1 \) and \( \lambda_2 \).
+- **Merging** the two emitters results in a single Poisson process with rate:
+  \[
+  \lambda = \lambda_1 + \lambda_2
+  \]
+- **Splitting** the process probabilistically assigns each event to either of the original sources, effectively recreating the processes with rates \( \lambda_1 \) and \( \lambda_2 \).
+
+Your task is to:
+1. **Verify the phenomenon** - by noting the new average rates of emssion before and after splitting/merging.
+2. **Check for by changing value of \lambda_1 and \lambda_2** - change the value of \lambda_1 and \lambda_2 and verify the phenomenon again.
 
 ---
+
+#### **Interarrival Times of the Poisson Process**
+
+Finally, we show that the **interarrival times** (i.e., the time between successive events) in a Poisson process follow an **Exponential distribution**. Specifically:
+
+- If the Poisson process has rate \( \lambda \),
+- Then the interarrival time \( T \) is an **Exponential random variable** with probability density:
+  \[
+  f_T(t) = \lambda e^{-\lambda t}, \quad t \geq 0
+  \]
+
+We simulate this behavior and verify that the histogram of interarrival times matches the exponential distribution.
