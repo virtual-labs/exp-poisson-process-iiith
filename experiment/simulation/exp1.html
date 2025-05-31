@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Virtual-Labs global style -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css">
+    <!-- Your custom CSS (copy/paste the contents from exp2.css below into this file) -->
+    <link rel="stylesheet" href="./css/css1.css">
+    <!-- MathJax (if you want to render any inline LaTeX in instructions) -->
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <!-- Chart.js for plotting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <title>Emergence of Poisson Process</title>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Task Tabs -->
+        <div class="columns is-centered">
+            <div class="columns is-centered">
+                <div class="column is-one-quarter v-instruction-title">
+                    Tasks
+                </div>
+                <div class="column">
+                    <div class="v-tabs">
+                        <ul>
+                            <!-- Keep the first tab as-is (linking back to exp1 if needed) -->
+                            <li id="Task1" onclick="window.location.href = 'exp1.html';">
+                                <a>Emergence of Poisson Process from Repeated Bernoulli Trials</a>
+                            </li>
+                            <!-- Our new experiment becomes Task2 and Task3 -->
+                            <li id="Task2" onclick="window.location.href = 'exp2.html';" >
+                                <a>Merging and Splitting of Poisson Process</a>
+                            </li>
+                            <li id="Task3" onclick="window.location.href = 'exp3.html';" >
+                                <a>Interarrival Times of Poisson Process</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions Panel -->
+        <div class="columns is-centered">
+            <div class="column">
+                <div class="v-collapsible-instruction-container v-instruction-container">
+                    <div class="v-collapsible is-size-5">Instructions</div>
+                    <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
+                        <ul style="list-style: disc;">
+                            <li>
+                                In this experiment, we will visualize—side by side—(1) the Poisson probability mass function (PMF) and (2) the Gaussian probability density function (PDF), both having mean and variance equal to \(n\). By sliding \(n\) from small to large, you will see how a Poisson\((n)\) “looks” when \(n\) is small versus how, as \(n\to\infty\), it becomes indistinguishable from a Normal\((n,\,n)\) curve.
+                            </li>
+                            <li>
+                                Use the slider below to choose an integer \(n \ge 1\). Conceptually, \(n\) here plays the role of \(\lambda\) (the Poisson parameter). For each \(n\):
+                                <ol style="margin-top:8px; margin-bottom:8px;">
+                                    <li>We compute and plot the Poisson PMF \(P\{X = k\} = e^{-n} \frac{n^k}{k!}\) for \(k = 0,\dots,K_n\), where \(K_n = \lceil n + 4\sqrt{n}\rceil\).</li>
+                                    <li>We overlay the Gaussian PDF 
+                                        \[
+                                            f(x) \;=\; \frac{1}{\sqrt{2\pi\,n}} \exp\Biggl(-\frac{(x - n)^2}{2\,n}\Biggr)
+                                        \]
+                                        as a continuous curve on the same horizontal axis.
+                                    </li>
+                                    <li>Observe how, as \(n\) grows, the red “Poisson bars” align ever more closely with the blue Gaussian curve.</li>
+                                </ol>
+                            </li>
+                            <li>
+                                Below the plots, you will see a brief observation describing the approximation quality for the current \(n\).
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <!-- Main Experiment Section -->
+    <section id="page1">
+        <div class="columns is-centered">
+            <div class="column is-11-desktop is-12-tablet is-12-mobile">
+                <div class="v-datalist-container components-list">
+                    <!-- Experiment Title -->
+                    <h3 class="v-datalist-title" style="text-align:center;">Gaussian ↔ Poisson Approximation</h3>
+                    <!-- Slider Control Panel -->
+                    <div class="control-panel" style="margin-top: 20px;">
+                        <div class="controls-container">
+                            <label for="sliderN" class="label">Choose \(n\) (λ):&nbsp;</label>
+                            <input type="range" id="sliderN" min="1" max="50" step="1" value="10" class="slider">
+                            <span id="displayN" class="value-display">10</span>
+                        </div>
+                    </div>
+
+                    <!-- Plots: Poisson PMF (bar) and Gaussian PDF (line) -->
+                    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                        <div style="flex: 1;">
+                            <canvas id="poissonChart" style="width: 100%; max-width: 600px; max-height: 300px;"></canvas>
+                        </div>
+                        <div style="flex: 1;">
+                            <canvas id="gaussianChart" style="width: 100%; max-width: 600px; max-height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Observations Panel -->
+            <div class="column is-3-desktop is-4-tablet is-12-mobile">
+                <div class="v-datalist-container components-list canvas-container">
+                    <div class="v-datalist-title">Observations</div>
+                    <div id="observations" style="margin-left: 3%; margin-right: 3%; margin-top: 2%; margin-bottom: 2%; padding: 2px 5px 10px 10px;">
+                        <!-- Dynamically filled by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Virtual-Labs script (keep as is) -->
+    <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
+    <!-- Our custom JS (copy/paste the contents from poisson.js below into this file) -->
+    <script src="./js/poisson.js"></script>
+</body>
+
+</html>
