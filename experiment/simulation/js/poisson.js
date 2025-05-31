@@ -1,13 +1,33 @@
 // poisson.js
 
-// We'll create two Chart.js instances: one for Poisson PMF, one for Gaussian PDF.
-// Then update both whenever the slider 'n' changes.
+// Single Chart.js object for combined plot
+let combinedChart = null;
 
-// Global references to Chart.js objects
-let poissonChart = null;
-let gaussianChart = null;
+// Utility to compute Binomial PMF via recurrence
+// P_binom(0) = (1 - p)^n
+// P_binom(k+1) = P_binom(k) * [(n - k)/(k + 1)] * [p/(1 - p)]
+function computeBinomialPMF(n, p, Kmax) {
+    const pmf = [];
+    // If p >= 1, degenerate at k = n
+    if (p >= 1) {
+        for (let k = 0; k <= Kmax; k++) {
+            pmf.push(k === n ? 1 : 0);
+        }
+        return pmf;
+    }
+    // Compute P(X = 0)
+    let Pk = Math.pow(1 - p, n);
+    pmf.push(Pk);
+    for (let k = 0; k < Kmax; k++) {
+        // Recurrence: P(k+1) = P(k) * [(n - k)/(k + 1)] * [p/(1 - p)]
+        const multiplier = ((n - k) / (k + 1)) * (p / (1 - p));
+        Pk = Pk * multiplier;
+        pmf.push(Pk);
+    }
+    return pmf;
+}
 
-// Utility: Factorial (we'll use a memoized approach up to, say, 200)
+// Compute Poisson PMF P(X = k) = e^{-λ} λ^k / k!
 const factorialCache = [1];
 function factorial(k) {
     if (factorialCache[k] !== undefined) {
@@ -21,98 +41,117 @@ function factorial(k) {
     }
     return factorialCache[k];
 }
-
-// Compute Poisson PMF P(X = k) = e^{-λ} λ^k / k!
 function poissonPMF(lambda, k) {
-    // For moderate k and lambda (≤50), direct formula is fine.
     return Math.exp(-lambda) * Math.pow(lambda, k) / factorial(k);
 }
 
-// Compute Gaussian PDF with mean μ = λ and variance σ² = λ
-function gaussianPDF(lambda, x) {
-    const mu = lambda;
-    const sigma = Math.sqrt(lambda);
-    const coeff = 1 / (Math.sqrt(2 * Math.PI) * sigma);
-    const exponent = -Math.pow(x - mu, 2) / (2 * lambda);
-    return coeff * Math.exp(exponent);
-}
+// Compute and update the combined chart + average error + observations
+function updateCombinedChart(n, lambda) {
+    // Ensure lambda ≤ n so that p = λ/n ≤ 1
+    if (lambda > n) {
+        lambda = n;
+    }
+    const p = lambda / n;
 
-// Build data arrays and update both charts
-function updateCharts(nValue) {
-    const lambda = nValue;
+    // Determine Kmax = min(n, ceil(lambda + 4*sqrt(lambda)))
+    const rawK = Math.ceil(lambda + 4 * Math.sqrt(lambda));
+    const Kmax = Math.min(n, rawK);
 
-    // 1) Build Poisson PMF array for k = 0..K_max, where K_max ≈ λ + 4√λ
-    const Kmax = Math.ceil(lambda + 4 * Math.sqrt(lambda));
-    const pmfLabels = [];
-    const pmfData = [];
+    // Build Binomial PMF array for k = 0..Kmax
+    const labels = [];
+    const binData = [];
+    const poisData = [];
+
+    const binPMF = computeBinomialPMF(n, p, Kmax);
     for (let k = 0; k <= Kmax; k++) {
-        pmfLabels.push(k);
-        pmfData.push(poissonPMF(lambda, k));
+        labels.push(k);
+        binData.push(binPMF[k]);
     }
 
-    // 2) Build Gaussian PDF over a fine grid [0, Kmax], step = 0.1
-    const pdfLabels = [];
-    const pdfData = [];
-    for (let x = 0; x <= Kmax; x += 0.1) {
-        pdfLabels.push(parseFloat(x.toFixed(1)));
-        pdfData.push(gaussianPDF(lambda, x));
+    // Build Poisson PMF array for k = 0..Kmax
+    for (let k = 0; k <= Kmax; k++) {
+        poisData.push(poissonPMF(lambda, k));
     }
 
-    // 3) Update Poisson Chart (bar chart)
-    poissonChart.data.labels = pmfLabels;
-    poissonChart.data.datasets[0].data = pmfData;
-    poissonChart.options.scales.y.max = Math.max(...pmfData) * 1.1;
-    poissonChart.options.plugins.title.text = `Poisson PMF (λ = ${lambda})`;
-    poissonChart.update();
+    // Update Chart.js data
+    combinedChart.data.labels = labels;
+    combinedChart.data.datasets[0].data = binData;   // Dataset 0: Binomial
+    combinedChart.data.datasets[1].data = poisData;  // Dataset 1: Poisson
+    // Adjust Y-axis max to 1.1 × the larger of the two maxima
+    const maxY = Math.max(...binData, ...poisData) * 1.1;
+    combinedChart.options.scales.y.max = maxY;
 
-    // 4) Update Gaussian Chart (line chart)
-    gaussianChart.data.labels = pdfLabels;
-    gaussianChart.data.datasets[0].data = pdfData;
-    // Find a reasonable y-max so that Gaussian peak is visible
-    const peakPDF = Math.max(...pdfData);
-    gaussianChart.options.scales.y.max = peakPDF * 1.1;
-    gaussianChart.options.plugins.title.text = `Gaussian PDF \n(μ = ${lambda}, σ² = ${lambda})`;
-    gaussianChart.update();
+    // Update chart title to reflect current (n, λ)
+    combinedChart.options.plugins.title.text =
+        `Binomial(n=${n}, p=${p.toFixed(4)}) vs Poisson(λ=${lambda})`;
+    combinedChart.update();
 
-    // 5) Fill in Observations
+    // Compute average absolute error
+    let sumErr = 0;
+    for (let k = 0; k <= Kmax; k++) {
+        sumErr += Math.abs(binData[k] - poisData[k]);
+    }
+    const avgErr = (sumErr / (Kmax + 1)).toFixed(6);
+
+    // Update the avgError div
+    const avgDiv = document.getElementById('avgError');
+    avgDiv.innerHTML = `Average absolute error: <span style="color: #3273dc;">${avgErr}</span>`;
+
+    // Fill in Observations
     const obsDiv = document.getElementById('observations');
     let comment = '';
-    if (lambda < 5) {
-        comment = `<p>When λ = ${lambda}, the Poisson PMF is noticeably skewed (right‐tail). The Gaussian PDF is a poor fit, especially near k = 0.</p>`;
-    } else if (lambda < 20) {
-        comment = `<p>When λ = ${lambda}, the Poisson PMF is less skewed, and the Gaussian starts to approximate it around the mode. However, there remain visible deviations at low k and high k.</p>`;
+    if (n < 50) {
+        comment = `<p>For <strong>n = ${n}</strong> and <strong>λ = ${lambda}</strong>, 
+                   the Binomial PMF (red) still differs noticeably from Poisson (blue). The mean error 
+                   is <strong>${avgErr}</strong>, and you can see deviations at multiple k‐values.</p>`;
+    } else if (n < 200) {
+        comment = `<p>With <strong>n = ${n}</strong>, Binomial\((n,\tfrac{λ}{n})\) (red) is beginning to 
+                   resemble Poisson\((λ)\) (blue). The average error is <strong>${avgErr}</strong>, 
+                   and deviations are mostly in the tails.</p>`;
     } else {
-        comment = `<p>When λ = ${lambda}, Poisson\((λ)\) looks almost symmetric. The Gaussian PDF (blue curve) closely matches the Poisson bars. As λ grows, the two match extremely well.</p>`;
+        comment = `<p>At <strong>n = ${n}</strong> with <strong>λ = ${lambda}</strong>, Binomial (red) and 
+                   Poisson (blue) are nearly indistinguishable. The average error is 
+                   <strong>${avgErr}</strong>, demonstrating the convergence of 
+                   Binomial\(\bigl(n,\frac{λ}{n}\bigr)\) → Poisson\((λ)\).</p>`;
     }
     obsDiv.innerHTML = comment;
 }
 
-// Initialize both Chart.js charts when the page loads
-function initializeCharts() {
-    const ctxPois = document.getElementById('poissonChart').getContext('2d');
-    const ctxGauss = document.getElementById('gaussianChart').getContext('2d');
+// Initialize the combined Chart.js chart when the page loads
+function initializeCombinedChart() {
+    const ctx = document.getElementById('combinedChart').getContext('2d');
 
-    // Create a bar chart for Poisson
-    poissonChart = new Chart(ctxPois, {
+    combinedChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: [], // will be filled on first update
-            datasets: [{
-                label: 'Poisson P(X=k)',
-                data: [],
-                backgroundColor: 'rgba(220, 53, 69, 0.5)', // redish bars
-                borderColor: 'rgba(220, 53, 69, 1)',
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    label: 'Binomial P(X=k)',
+                    data: [],
+                    backgroundColor: 'rgba(220, 53, 69, 0.5)',   // red bars
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Poisson P(X=k)',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',  // blue bars
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }
+            ]
         },
         options: {
             responsive: true,
             plugins: {
                 title: {
                     display: true,
-                    text: 'Poisson PMF'
+                    text: 'Binomial vs Poisson PMF'
                 },
-                legend: { display: false }
+                legend: {
+                    position: 'top'
+                }
             },
             scales: {
                 x: {
@@ -126,68 +165,46 @@ function initializeCharts() {
                     title: {
                         display: true,
                         text: 'P(X = k)'
-                    }
+                    },
+                    max: 1 // will be updated on first draw
                 }
             }
         }
     });
 
-    // Create a line chart for Gaussian
-    gaussianChart = new Chart(ctxGauss, {
-        type: 'line',
-        data: {
-            labels: [], // will be filled on first update
-            datasets: [{
-                label: 'Gaussian f(x)',
-                data: [],
-                borderColor: 'teal',
-                borderWidth: 2,
-                fill: false,
-                pointRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Gaussian PDF'
-                },
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'x'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'f(x)'
-                    }
-                }
-            }
-        }
-    });
-
-    // Initially populate with n = 10
-    updateCharts(10);
+    // Initial draw with default parameters (n=100, λ=10)
+    updateCombinedChart(100, 10);
 }
 
-// Hook up the slider
+// Hook up the sliders once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
-    initializeCharts();
+    initializeCombinedChart();
 
-    const slider = document.getElementById('sliderN');
-    const display = document.getElementById('displayN');
+    const sliderN = document.getElementById('sliderN');
+    const displayN = document.getElementById('displayN');
+    const sliderLambda = document.getElementById('sliderLambda');
+    const displayLambda = document.getElementById('displayLambda');
 
-    // Whenever the slider moves, update the two charts and observations
-    slider.addEventListener('input', (e) => {
+    // When n‐slider changes:
+    sliderN.addEventListener('input', (e) => {
         const nVal = parseInt(e.target.value, 10);
-        display.textContent = nVal;
-        updateCharts(nVal);
+        displayN.textContent = nVal;
+
+        // Ensure λ's max ≤ nVal
+        sliderLambda.max = nVal;
+        if (parseInt(sliderLambda.value, 10) > nVal) {
+            sliderLambda.value = nVal;
+            displayLambda.textContent = nVal;
+        }
+
+        // Update the combined chart
+        updateCombinedChart(nVal, parseInt(sliderLambda.value, 10));
+    });
+
+    // When λ‐slider changes:
+    sliderLambda.addEventListener('input', (e) => {
+        const lambdaVal = parseInt(e.target.value, 10);
+        displayLambda.textContent = lambdaVal;
+        updateCombinedChart(parseInt(sliderN.value, 10), lambdaVal);
     });
 });
