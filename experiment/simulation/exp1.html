@@ -43,28 +43,52 @@
             </div>
         </div>
 
-        <!-- Instructions Panel -->
-        <div class="columns is-centered">
+          <div class="columns is-centered">
             <div class="column">
                 <div class="v-collapsible-instruction-container v-instruction-container">
                     <div class="v-collapsible is-size-5">Instructions</div>
                     <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
                         <ul style="list-style: disc;">
                             <li>
-                                This experiment demonstrates how the Binomial distribution
-                                with \( p = \frac{\lambda}{n} \) converges to the Poisson distribution as
-                                \( n \to \infty \).
+                                In this experiment, you will visualize—on the same plot—the Binomial PMF
+                                arising from \(n\) repeated Bernoulli trials with success probability
+                                \(p = \tfrac{\lambda}{n}\), and the Poisson PMF with mean \(\lambda\). By increasing
+                                \(n\) (the number of trials), while keeping \(\lambda\) fixed, you will see how the
+                                Binomial\(\bigl(n,\,\tfrac{\lambda}{n}\bigr)\) distribution converges to a Poisson\((\lambda)\).
                             </li>
                             <li>
-                                Use the sliders to select:
-                                <ul>
-                                    <li>\(n\): Number of Bernoulli trials</li>
-                                    <li>\(\lambda\): Target Poisson mean</li>
-                                </ul>
+                                Use the sliders below to choose:
+                                <ol style="margin-top:8px; margin-bottom:8px;">
+                                    <li>\(n\) (the number of Bernoulli trials): as \(n\) becomes large,
+                                        \(p = \tfrac{\lambda}{n}\) becomes small, but the mean remains \(\lambda\).</li>
+                                    <li>\(\lambda\) (the Poisson mean): this also determines the expected number of
+                                        successes in the Binomial model.</li>
+                                </ol>
                             </li>
                             <li>
-                                The plot below compares both distributions' PMFs on the same axes.
-                                You'll also see the average absolute error between them.
+                                For the selected \((n, \lambda)\):
+                                <ol style="margin-top:8px; margin-bottom:8px;">
+                                    <li>Compute the Binomial PMF
+                                        \[
+                                            P_{\text{Bin}}(k) \;=\; \binom{n}{k} \Bigl(\tfrac{\lambda}{n}\Bigr)^{k} 
+                                            \Bigl(1 - \tfrac{\lambda}{n}\Bigr)^{\,n - k},\quad
+                                            k = 0,1,\ldots, K_{\max},
+                                        \]
+                                        where \(K_{\max} = \min\bigl(n,\;\lceil \lambda + 4\sqrt{\lambda}\rceil\bigr)\).
+                                    </li>
+                                    <li>Compute the Poisson PMF
+                                        \[
+                                            P_{\text{Pois}}(k) \;=\; e^{-\lambda} \frac{\lambda^{\,k}}{k!},\quad
+                                            k = 0,1,\ldots, K_{\max}.
+                                        \]
+                                    </li>
+                                    <li>Plot both PMFs on the same set of axes (Binomial in red, Poisson in blue).</li>
+                                    <li>The panel below the plot will show the average absolute error
+                                        \(\displaystyle \frac{1}{K_{\max}+1}\sum_{k=0}^{K_{\max}} \bigl|P_{\text{Bin}}(k) - P_{\text{Pois}}(k)\bigr|\).</li>
+                                </ol>
+                            </li>
+                            <li>
+                                Observe how, as \(n\) grows, the two curves align more closely and the average error shrinks.
                             </li>
                         </ul>
                     </div>
