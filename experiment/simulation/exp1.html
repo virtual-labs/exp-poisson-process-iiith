@@ -7,17 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Virtual-Labs global style -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css">
-    <!-- Your custom CSS -->
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/css1.css">
-    <!-- MathJax (if you want to render any inline LaTeX in instructions) -->
+    <!-- MathJax -->
     <script type="text/javascript" id="MathJax-script" async
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-    <!-- Chart.js for plotting -->
+    <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <title>Emergence of Poisson Process</title>
 </head>
 
-<body>
+<body style="padding-top: 20px;">
     <div class="container">
         <!-- Task Tabs -->
         <div class="columns is-centered">
@@ -28,11 +28,9 @@
                 <div class="column">
                     <div class="v-tabs">
                         <ul>
-                            <!-- Keep Task1 as this experiment -->
                             <li id="Task1" onclick="window.location.href = 'exp1.html';">
                                 <a>Emergence of Poisson Process from Repeated Bernoulli Trials</a>
                             </li>
-                            <!-- Other tasks (unchanged links) -->
                             <li id="Task2" onclick="window.location.href = 'exp2.html';">
                                 <a>Merging and Splitting of Poisson Process</a>
                             </li>
@@ -53,45 +51,20 @@
                     <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
                         <ul style="list-style: disc;">
                             <li>
-                                In this experiment, you will visualize—on the same plot—the Binomial PMF
-                                arising from \(n\) repeated Bernoulli trials with success probability
-                                \(p = \tfrac{\lambda}{n}\), and the Poisson PMF with mean \(\lambda\). By increasing
-                                \(n\) (the number of trials), while keeping \(\lambda\) fixed, you will see how the
-                                Binomial\(\bigl(n,\,\tfrac{\lambda}{n}\bigr)\) distribution converges to a Poisson\((\lambda)\).
+                                This experiment demonstrates how the Binomial distribution
+                                with \( p = \frac{\lambda}{n} \) converges to the Poisson distribution as
+                                \( n \to \infty \).
                             </li>
                             <li>
-                                Use the sliders below to choose:
-                                <ol style="margin-top:8px; margin-bottom:8px;">
-                                    <li>\(n\) (the number of Bernoulli trials): as \(n\) becomes large,
-                                        \(p = \tfrac{\lambda}{n}\) becomes small, but the mean remains \(\lambda\).</li>
-                                    <li>\(\lambda\) (the Poisson mean): this also determines the expected number of
-                                        successes in the Binomial model.</li>
-                                </ol>
+                                Use the sliders to select:
+                                <ul>
+                                    <li>\(n\): Number of Bernoulli trials</li>
+                                    <li>\(\lambda\): Target Poisson mean</li>
+                                </ul>
                             </li>
                             <li>
-                                For the selected \((n, \lambda)\):
-                                <ol style="margin-top:8px; margin-bottom:8px;">
-                                    <li>Compute the Binomial PMF
-                                        \[
-                                            P_{\text{Bin}}(k) \;=\; \binom{n}{k} \Bigl(\tfrac{\lambda}{n}\Bigr)^{k} 
-                                            \Bigl(1 - \tfrac{\lambda}{n}\Bigr)^{\,n - k},\quad
-                                            k = 0,1,\ldots, K_{\max},
-                                        \]
-                                        where \(K_{\max} = \min\bigl(n,\;\lceil \lambda + 4\sqrt{\lambda}\rceil\bigr)\).
-                                    </li>
-                                    <li>Compute the Poisson PMF
-                                        \[
-                                            P_{\text{Pois}}(k) \;=\; e^{-\lambda} \frac{\lambda^{\,k}}{k!},\quad
-                                            k = 0,1,\ldots, K_{\max}.
-                                        \]
-                                    </li>
-                                    <li>Plot both PMFs on the same set of axes (Binomial in red, Poisson in blue).</li>
-                                    <li>The panel below the plot will show the average absolute error
-                                        \(\displaystyle \frac{1}{K_{\max}+1}\sum_{k=0}^{K_{\max}} \bigl|P_{\text{Bin}}(k) - P_{\text{Pois}}(k)\bigr|\).</li>
-                                </ol>
-                            </li>
-                            <li>
-                                Observe how, as \(n\) grows, the two curves align more closely and the average error shrinks.
+                                The plot below compares both distributions' PMFs on the same axes.
+                                You'll also see the average absolute error between them.
                             </li>
                         </ul>
                     </div>
@@ -99,6 +72,7 @@
             </div>
         </div>
     </div>
+
     <br>
 
     <!-- Main Experiment Section -->
@@ -106,54 +80,51 @@
         <div class="columns is-centered">
             <div class="column is-11-desktop is-12-tablet is-12-mobile">
                 <div class="v-datalist-container components-list">
-                    <!-- Experiment Title -->
                     <h3 class="v-datalist-title" style="text-align:center;">Binomial ↔ Poisson Emergence</h3>
 
-                    <!-- Slider Control Panel -->
+                    <!-- Sliders -->
                     <div class="control-panel" style="margin-top: 20px;">
                         <div class="controls-container">
-                            <!-- Slider for number of trials n -->
                             <div class="field">
                                 <label for="sliderN" class="label">Choose \(n\) (number of trials):&nbsp;</label>
-                                <input type="range" id="sliderN" min="10" max="500" step="10" value="100" class="slider">
+                                <input type="range" id="sliderN" min="10" max="500" step="10" value="100"
+                                    class="slider">
                                 <span id="displayN" class="value-display">100</span>
                             </div>
-                            <!-- Slider for Poisson mean λ -->
                             <div class="field">
                                 <label for="sliderLambda" class="label">Choose \(\lambda\):&nbsp;</label>
-                                <input type="range" id="sliderLambda" min="1" max="100" step="1" value="10" class="slider">
+                                <input type="range" id="sliderLambda" min="1" max="100" step="1" value="10"
+                                    class="slider">
                                 <span id="displayLambda" class="value-display">10</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Single Combined Plot -->
+                    <!-- Combined Chart -->
                     <div style="display: flex; justify-content: center; margin-top: 20px;">
-                        <canvas id="combinedChart" style="width: 100%; max-width: 800px; max-height: 400px;"></canvas>
+                        <canvas id="combinedChart"
+                            style="width: 100%; max-width: 900px; height: 450px;"></canvas>
                     </div>
 
-                    <!-- Average Error Display -->
-                    <div id="avgError" style="text-align:center; margin-top: 15px; font-weight: bold;">
-                        <!-- Dynamically filled by JS -->
-                    </div>
-                </div>
-            </div>
+                    <!-- Error Display -->
+                    <div id="avgError" style="text-align:center; margin-top: 15px; font-weight: bold;"></div>
 
-            <!-- Observations Panel -->
-            <div class="column is-3-desktop is-4-tablet is-12-mobile">
-                <div class="v-datalist-container components-list canvas-container">
-                    <div class="v-datalist-title">Observations</div>
-                    <div id="observations" style="margin-left: 3%; margin-right: 3%; margin-top: 2%; margin-bottom: 2%; padding: 2px 5px 10px 10px;">
-                        <!-- Dynamically filled by JS -->
+                    <!-- Observations -->
+                    <div class="v-datalist-container components-list canvas-container" style="margin-top: 25px;">
+                        <div class="v-datalist-title">Observations</div>
+                        <div id="observations"
+                            style="margin-left: 3%; margin-right: 3%; margin-top: 2%; margin-bottom: 2%; padding: 2px 5px 10px 10px;">
+                            <!-- Filled by JS -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Virtual-Labs script (keep as is) -->
+    <!-- Virtual-Labs JS -->
     <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
-    <!-- Our custom JS (copy/paste the contents from poisson.js below into this file) -->
+    <!-- Custom JS -->
     <script src="./js/poisson.js"></script>
 </body>
 
