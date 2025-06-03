@@ -1,155 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Virtual-Labs global style -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="./css/css1.css">
-    <!-- MathJax -->
-    <script type="text/javascript" id="MathJax-script" async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <title>Emergence of Poisson Process</title>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
+  <link rel="stylesheet" href="./css/css1.css" />
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  <title>Emergence of Poisson Process</title>
+
+  <style>
+    body {
+      padding-top: 20px;
+    }
+
+    /* Tasks heading */
+    .tasks-heading {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #444;
+    }
+
+    /* Unified top tab bar */
+    .v-tabs ul {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      list-style: none;
+      padding: 0;
+      margin: 0 3%;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .v-tabs li {
+      display: inline-block;
+      margin: 0;
+    }
+
+    .v-tabs a {
+      display: inline-block;
+      padding: 0.75rem 1.25rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .v-tabs li.active > a {
+      color: #3273dc;
+      border-bottom: 3px solid #3273dc;
+    }
+
+    .v-tabs a:hover {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .subheading-box {
+      background-color: #f7fdf7;
+      border-left: 4px solid #3c763d;
+      padding: 0.75rem 1rem;
+      margin: 1rem 3% 1.5rem 3%;
+      border-radius: 4px;
+    }
+
+    .subheading-box .title {
+      color: #3c763d;
+      font-size: 1.25rem;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* Aligned sliders */
+    .controls-container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .field {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .label {
+      display: block;
+      text-align: center;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .value-display {
+      display: block;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 0.3rem;
+    }
+  </style>
 </head>
 
-<body style="padding-top: 20px;">
-    <div class="container">
-        <!-- Task Tabs -->
-        <div class="columns is-centered">
-            <div class="columns is-centered">
-                <div class="column is-one-quarter v-instruction-title">
-                    Tasks
-                </div>
-                <div class="column">
-                    <div class="v-tabs">
-                        <ul>
-                            <li id="Task1" onclick="window.location.href = 'exp1.html';">
-                                <a>Emergence of Poisson Process from Repeated Bernoulli Trials</a>
-                            </li>
-                            <li id="Task2" onclick="window.location.href = 'exp2.html';">
-                                <a>Merging and Splitting of Poisson Process</a>
-                            </li>
-                            <li id="Task3" onclick="window.location.href = 'exp3.html';">
-                                <a>Interarrival Times of Poisson Process</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body>
+  <!-- === Tasks Header === -->
+  <div class="tasks-heading">Tasks</div>
 
-          <div class="columns is-centered">
-            <div class="column">
-                <div class="v-collapsible-instruction-container v-instruction-container">
-                    <div class="v-collapsible is-size-5">Instructions</div>
-                    <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
-                        <ul style="list-style: disc;">
-                            <li>
-                                In this experiment, you will visualize—on the same plot—the Binomial PMF
-                                arising from \(n\) repeated Bernoulli trials with success probability
-                                \(p = \tfrac{\lambda}{n}\), and the Poisson PMF with mean \(\lambda\). By increasing
-                                \(n\) (the number of trials), while keeping \(\lambda\) fixed, you will see how the
-                                Binomial\(\bigl(n,\,\tfrac{\lambda}{n}\bigr)\) distribution converges to a Poisson\((\lambda)\).
-                            </li>
-                            <li>
-                                Use the sliders below to choose:
-                                <ol style="margin-top:8px; margin-bottom:8px;">
-                                    <li>\(n\) (the number of Bernoulli trials): as \(n\) becomes large,
-                                        \(p = \tfrac{\lambda}{n}\) becomes small, but the mean remains \(\lambda\).</li>
-                                    <li>\(\lambda\) (the Poisson mean): this also determines the expected number of
-                                        successes in the Binomial model.</li>
-                                </ol>
-                            </li>
-                            <li>
-                                For the selected \((n, \lambda)\):
-                                <ol style="margin-top:8px; margin-bottom:8px;">
-                                    <li>Compute the Binomial PMF
-                                        \[
-                                            P_{\text{Bin}}(k) \;=\; \binom{n}{k} \Bigl(\tfrac{\lambda}{n}\Bigr)^{k} 
-                                            \Bigl(1 - \tfrac{\lambda}{n}\Bigr)^{\,n - k},\quad
-                                            k = 0,1,\ldots, K_{\max},
-                                        \]
-                                        where \(K_{\max} = \min\bigl(n,\;\lceil \lambda + 4\sqrt{\lambda}\rceil\bigr)\).
-                                    </li>
-                                    <li>Compute the Poisson PMF
-                                        \[
-                                            P_{\text{Pois}}(k) \;=\; e^{-\lambda} \frac{\lambda^{\,k}}{k!},\quad
-                                            k = 0,1,\ldots, K_{\max}.
-                                        \]
-                                    </li>
-                                    <li>Plot both PMFs on the same set of axes (Binomial in red, Poisson in blue).</li>
-                                    <li>The panel below the plot will show the average absolute error
-                                        \(\displaystyle \frac{1}{K_{\max}+1}\sum_{k=0}^{K_{\max}} \bigl|P_{\text{Bin}}(k) - P_{\text{Pois}}(k)\bigr|\).</li>
-                                </ol>
-                            </li>
-                            <li>
-                                Observe how, as \(n\) grows, the two curves align more closely and the average error shrinks.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+  <!-- === Unified Navigation Bar === -->
+  <div class="v-tabs">
+    <ul>
+      <li class="active"><a href="exp1.html">Sub Experiment - 1</a></li>
+      <li><a href="exp2.html">Sub Experiment - 2</a></li>
+      <li><a href="exp3.html">Sub Experiment - 3</a></li>
+    </ul>
+  </div>
+
+  <!-- === Subheading Box === -->
+  <div class="subheading-box">
+    <p class="title">Emergence of Poisson Process from Bernoulli Process</p>
+  </div>
+
+  <!-- === Instructions Panel === -->
+  <div class="columns is-centered">
+    <div class="column">
+      <div class="v-collapsible-instruction-container v-instruction-container">
+        <div class="v-collapsible is-size-5">Instructions</div>
+        <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
+          <ul style="list-style: disc;">
+            <li>
+              This experiment visualizes the convergence of the Binomial distribution
+              to the Poisson distribution for \( p = \lambda/n \) as \( n \to \infty \).
+            </li>
+            <li>
+              Use the sliders below to choose:
+              <ol>
+                <li>\(n\): number of Bernoulli trials</li>
+                <li>\(\lambda\): Poisson mean</li>
+              </ol>
+            </li>
+            <li>
+              For the selected \((n, \lambda)\):
+              <ol>
+                <li>Plot Binomial PMF</li>
+                <li>Plot Poisson PMF</li>
+                <li>Compare visually and via average absolute error</li>
+              </ol>
+            </li>
+            <li>
+              As \(n\) grows large, observe the distributions align and error reduces.
+            </li>
+          </ul>
         </div>
+      </div>
     </div>
+  </div>
 
-    <br>
+  <br />
 
-    <!-- Main Experiment Section -->
-    <section id="page1">
-        <div class="columns is-centered">
-            <div class="column is-11-desktop is-12-tablet is-12-mobile">
-                <div class="v-datalist-container components-list">
-                    <h3 class="v-datalist-title" style="text-align:center;">Binomial ↔ Poisson Emergence</h3>
+  <!-- === Experiment Section === -->
+  <section id="page1">
+    <div class="columns is-centered">
+      <div class="column is-11-desktop is-12-tablet is-12-mobile">
+        <div class="v-datalist-container components-list">
+          <h3 class="v-datalist-title" style="text-align: center;">
+            Binomial ↔ Poisson Emergence
+          </h3>
 
-                    <!-- Sliders -->
-                    <div class="control-panel" style="margin-top: 20px;">
-                        <div class="controls-container">
-                            <div class="field">
-                                <label for="sliderN" class="label">Choose \(n\) (number of trials):&nbsp;</label>
-                                <input type="range" id="sliderN" min="10" max="500" step="10" value="100"
-                                    class="slider">
-                                <span id="displayN" class="value-display">100</span>
-                            </div>
-                            <div class="field">
-                                <label for="sliderLambda" class="label">Choose \(\lambda\):&nbsp;</label>
-                                <input type="range" id="sliderLambda" min="1" max="100" step="1" value="10"
-                                    class="slider">
-                                <span id="displayLambda" class="value-display">10</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Combined Chart -->
-                    <div style="display: flex; justify-content: center; margin-top: 20px;">
-                        <canvas id="combinedChart"
-                            style="width: 100%; max-width: 900px; height: 450px;"></canvas>
-                    </div>
-
-                    <!-- Error Display -->
-                    <div id="avgError" style="text-align:center; margin-top: 15px; font-weight: bold;"></div>
-
-                    <!-- Observations -->
-                    <div class="v-datalist-container components-list canvas-container" style="margin-top: 25px;">
-                        <div class="v-datalist-title">Observations</div>
-                        <div id="observations"
-                            style="margin-left: 3%; margin-right: 3%; margin-top: 2%; margin-bottom: 2%; padding: 2px 5px 10px 10px;">
-                            <!-- Filled by JS -->
-                        </div>
-                    </div>
-                </div>
+          <!-- === Sliders === -->
+          <div class="control-panel" style="margin-top: 20px;">
+            <div class="controls-container">
+              <div class="field">
+                <label for="sliderN" class="label">Choose \(n\) (number of trials)</label>
+                <input
+                  type="range"
+                  id="sliderN"
+                  min="10"
+                  max="500"
+                  step="10"
+                  value="100"
+                  class="slider"
+                />
+                <span id="displayN" class="value-display">100</span>
+              </div>
+              <div class="field">
+                <label for="sliderLambda" class="label">Choose \(\lambda\)</label>
+                <input
+                  type="range"
+                  id="sliderLambda"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="10"
+                  class="slider"
+                />
+                <span id="displayLambda" class="value-display">10</span>
+              </div>
             </div>
+          </div>
+
+          <!-- === Chart === -->
+          <div style="display: flex; justify-content: center; margin-top: 20px;">
+            <canvas id="combinedChart" style="width: 100%; max-width: 900px; height: 450px;"></canvas>
+          </div>
+
+          <!-- === Error Display === -->
+          <div id="avgError" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+
+          <!-- === Observations === -->
+          <div class="v-datalist-container components-list canvas-container" style="margin-top: 25px;">
+            <div class="v-datalist-title">Observations</div>
+            <div id="observations"
+              style="margin-left: 3%; margin-right: 3%; margin-top: 2%; margin-bottom: 2%; padding: 2px 5px 10px 10px;">
+              <!-- JS will inject content here -->
+            </div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- Virtual-Labs JS -->
-    <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
-    <!-- Custom JS -->
-    <script src="./js/poisson.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
+  <script src="./js/poisson.js"></script>
 </body>
-
 </html>
