@@ -6,6 +6,11 @@ body {
     line-height: 1.6;
     color: #333;
 }
+.v-datalist-container.components-list {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
 
 .control-panel {
     background-color: #f5f5f5;

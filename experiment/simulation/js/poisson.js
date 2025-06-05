@@ -112,8 +112,12 @@ function updateCombinedChart(n, lambda) {
         comment = `<p>At <strong>n = ${n}</strong> with <strong>λ = ${lambda}</strong>, Binomial (red) and 
                    Poisson (blue) are nearly indistinguishable. The average error is 
                    <strong>${avgErr}</strong>, demonstrating the convergence of 
-                   Binomial\(\bigl(n,\frac{λ}{n}\bigr)\) → Poisson\((λ)\).</p>`;
+                   Binomial\(\bigl(n,\tfrac{λ}{n}\bigr)\) → Poisson\((λ)\).</p>`;
     }
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+    }
+
     obsDiv.innerHTML = comment;
 }
 

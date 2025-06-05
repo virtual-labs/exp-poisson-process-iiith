@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]']]
+    },
+    svg: { fontCache: 'global' }
+  };
+</script>
+
 <head>
+  <meta name="description" content="Author: Harsh Kapoor,
+    Purpose: Education and Learning,
+    Content Level: College,
+    A interactive experiment of probability and poisson process in specific.">
+
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,13 +24,21 @@
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
   <title>Emergence of Poisson Process</title>
 
   <style>
     body {
       padding-top: 20px;
     }
-
+    .white-boxed-panel {
+      background-color: #fff;
+      border: 1px solid #dbdbdb;
+      border-radius: 6px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
     /* Tasks heading */
     .tasks-heading {
       text-align: center;
@@ -163,47 +186,51 @@
     <div class="columns is-centered">
       <div class="column is-11-desktop is-12-tablet is-12-mobile">
         <div class="v-datalist-container components-list">
-          <h3 class="v-datalist-title" style="text-align: center;">
-            Binomial ↔ Poisson Emergence
-          </h3>
+          <!-- === Sliders Box === -->
+<div class="white-boxed-panel" style="padding: 1.25rem; margin-top: 20px;">
+  <h3 class="v-datalist-title" style="text-align: center;">
+    Binomial ↔ Poisson Emergence
+  </h3>
 
-          <!-- === Sliders === -->
-          <div class="control-panel" style="margin-top: 20px;">
-            <div class="controls-container">
-              <div class="field">
-                <label for="sliderN" class="label">Choose \(n\) (number of trials)</label>
-                <input
-                  type="range"
-                  id="sliderN"
-                  min="10"
-                  max="500"
-                  step="10"
-                  value="100"
-                  class="slider"
-                />
-                <span id="displayN" class="value-display">100</span>
-              </div>
-              <div class="field">
-                <label for="sliderLambda" class="label">Choose \(\lambda\)</label>
-                <input
-                  type="range"
-                  id="sliderLambda"
-                  min="1"
-                  max="100"
-                  step="1"
-                  value="10"
-                  class="slider"
-                />
-                <span id="displayLambda" class="value-display">10</span>
-              </div>
-            </div>
-          </div>
+  <div class="controls-container" style="margin-top: 20px;">
+    <div class="field">
+      <label for="sliderN" class="label">Choose \(n\) (number of trials)</label>
+      <input
+        type="range"
+        id="sliderN"
+        min="10"
+        max="500"
+        step="10"
+        value="100"
+        class="slider"
+      />
+      <span id="displayN" class="value-display">100</span>
+    </div>
+    <div class="field">
+      <label for="sliderLambda" class="label">Choose \(\lambda\)</label>
+      <input
+        type="range"
+        id="sliderLambda"
+        min="1"
+        max="100"
+        step="1"
+        value="10"
+        class="slider"
+      />
+      <span id="displayLambda" class="value-display">10</span>
+    </div>
+  </div>
+</div>
 
-          <!-- === Chart === -->
-          <div style="display: flex; justify-content: center; margin-top: 20px;">
-            <canvas id="combinedChart" style="width: 100%; max-width: 900px; height: 450px;"></canvas>
-          </div>
+<!-- === Chart Box === -->
+<div class="white-boxed-panel" style="padding: 1.25rem; margin-top: 20px;">
+  <div style="display: flex; justify-content: center;">
+    <canvas id="combinedChart" style="width: 100%; max-width: 800px; height: 450px;"></canvas>
+  </div>
+  <div id="avgError" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+</div>
 
+  
           <!-- === Error Display === -->
           <div id="avgError" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
 
