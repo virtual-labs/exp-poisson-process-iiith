@@ -1,4 +1,3 @@
-// --------------------------------------
 // 1. References & Global Variables
 // --------------------------------------
 const emitCanvas = document.getElementById("emitCanvas");
@@ -80,7 +79,7 @@ function initializeCharts() {
             maintainAspectRatio: false,
             scales: {
                 x: { title: { display: true, text: "Number of Emissions" } },
-                y: { beginAtZero: true, title: { display: true, text: "Frequency" }, ticks: { stepSize: 1 } },
+                y: { beginAtZero: true, title: { display: true, text: "Probability" } }, // Changed Y-axis title
             },
             plugins: { legend: { display: true, position: "top" } },
         },
@@ -136,6 +135,26 @@ function samplePoisson(lambda) {
     return k - 1;
 }
 
+// Helper function for factorial
+function factorial(n) {
+    if (n < 0) return NaN;
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+// Helper function for Poisson Probability Mass Function (PMF)
+function poissonPMF(k, lambda) {
+    if (k < 0 || !Number.isInteger(k)) return 0;
+    if (lambda < 0) return 0;
+    return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+}
+
 // --------------------------------------
 // 5. Simulation Loop & Control
 // --------------------------------------
@@ -158,7 +177,6 @@ function resetSimulation() {
     observedCountsForHistMerged = [];
 
     // Charts are initialized once on load. We only update their data and datasets here.
-    // updateNucleiPositions(true); // Initial setup of nuclei without animation. This is handled by the click handlers and initial load now.
     updateLineChart(); // Update line chart with appropriate datasets
     updateHistogramChart(); // Update histogram with appropriate datasets
     clearEmitCanvas();
@@ -173,8 +191,6 @@ function runTimeStep() {
     clearEmitCanvas();
 
     let count1 = 0, count2 = 0, currentMergedCount = 0;
-
-    // updateNucleiPositions(); // REMOVED: This was causing the animation to re-trigger every second
 
     if (mode === "merging") {
         const lamM = lambda1 + lambda2;
@@ -259,8 +275,8 @@ function updateLineChart() {
         lineChartInstance.data.datasets.push({
             label: "Merged (λ₁ + λ₂)",
             data: lineChartDataMerged,
-            borderColor: "rgba(0, 255, 162, 0.9)",
-            backgroundColor: "rgba(0, 255, 162, 0.3)",
+            borderColor: "rgba(0, 150, 136, 0.9)", // Teal
+            backgroundColor: "rgba(0, 150, 136, 0.3)",
             fill: false,
             tension: 0.2,
         });
@@ -268,16 +284,16 @@ function updateLineChart() {
         lineChartInstance.data.datasets.push({
             label: "Emitter 1 (λ₁)",
             data: lineChartData1,
-            borderColor: "rgba(220, 20, 60, 0.9)",
-            backgroundColor: "rgba(220, 20, 60, 0.3)",
+            borderColor: "rgba(255, 99, 132, 0.9)", // Red
+            backgroundColor: "rgba(255, 99, 132, 0.3)",
             fill: false,
             tension: 0.2,
         });
         lineChartInstance.data.datasets.push({
             label: "Emitter 2 (λ₂)",
             data: lineChartData2,
-            borderColor: "rgba(30, 144, 255, 0.9)",
-            backgroundColor: "rgba(30, 144, 255, 0.3)",
+            borderColor: "rgba(54, 162, 235, 0.9)", // Blue
+            backgroundColor: "rgba(54, 162, 235, 0.3)",
             fill: false,
             tension: 0.2,
         });
@@ -306,15 +322,34 @@ function updateHistogramChart() {
     if (mode === "merging") {
         if (observedCountsForHistMerged.length > 0) {
             const { freqMap, maxCount } = getHistogramData(observedCountsForHistMerged);
-            maxCombinedCount = maxCount;
+            // Ensure labels cover at least a reasonable range for Poisson PMF as well
+            maxCombinedCount = Math.max(maxCount, Math.ceil((lambda1 + lambda2) * 2)); // Go up to 2*lambda for labels
             labels = Array.from({ length: maxCombinedCount + 1 }, (_, i) => i);
-            const data = labels.map(label => freqMap.get(label) || 0);
+
+            const empiricalData = labels.map(label => (freqMap.get(label) || 0) / observedCountsForHistMerged.length);
+            const theoreticalData = labels.map(k => poissonPMF(k, lambda1 + lambda2));
+
+            // Plot Theoretical Poisson first (in background)
+            histogramChartInstance.data.datasets.push({
+                label: `Ideal Poisson (λ=${(lambda1 + lambda2).toFixed(1)})`,
+                data: theoreticalData,
+                backgroundColor: "rgba(0, 150, 136, 0.1)", // Lighter Teal
+                borderColor: "rgba(0, 150, 136, 0.5)",
+                borderWidth: 1,
+                type: 'line', // Plot as a line for PMF
+                pointRadius: 0, // No points on the line
+                fill: false,
+                tension: 0.2
+            });
+
+            // Plot Empirical Distribution (on top)
             histogramChartInstance.data.datasets.push({
                 label: "Empirical Distribution (Merged)",
-                data: data,
-                backgroundColor: "rgba(0, 255, 162, 0.6)",
-                borderColor: "rgba(0, 255, 162, 1)",
+                data: empiricalData,
+                backgroundColor: "rgba(0, 150, 136, 0.6)", // Teal
+                borderColor: "rgba(0, 150, 136, 1)",
                 borderWidth: 1,
+                type: 'bar' // Keep as bars
             });
         }
     } else { // Splitting mode
@@ -330,24 +365,59 @@ function updateHistogramChart() {
             ({ freqMap: freqMap2, maxCount: maxCount2 } = getHistogramData(observedCountsForHist2));
         }
 
-        maxCombinedCount = Math.max(maxCount1, maxCount2);
+        maxCombinedCount = Math.max(maxCount1, maxCount2, Math.ceil(lambda1 * 2), Math.ceil(lambda2 * 2)); // Cover both empirical and theoretical ranges
         labels = Array.from({ length: maxCombinedCount + 1 }, (_, i) => i);
-        const data1 = labels.map(label => freqMap1.get(label) || 0);
-        const data2 = labels.map(label => freqMap2.get(label) || 0);
 
+        const empiricalData1 = labels.map(label => (freqMap1.get(label) || 0) / observedCountsForHist1.length);
+        const theoreticalData1 = labels.map(k => poissonPMF(k, lambda1));
+
+        const empiricalData2 = labels.map(label => (freqMap2.get(label) || 0) / observedCountsForHist2.length);
+        const theoreticalData2 = labels.map(k => poissonPMF(k, lambda2));
+
+        // Plot Theoretical Poisson for Emitter 1
+        histogramChartInstance.data.datasets.push({
+            label: `Ideal Poisson (λ=${lambda1.toFixed(1)})`,
+            data: theoreticalData1,
+            backgroundColor: "rgba(255, 99, 132, 0.1)", // Lighter Red
+            borderColor: "rgba(255, 99, 132, 0.5)",
+            borderWidth: 1,
+            type: 'line',
+            pointRadius: 0,
+            fill: false,
+            tension: 0.2
+        });
+
+        // Plot Theoretical Poisson for Emitter 2
+        histogramChartInstance.data.datasets.push({
+            label: `Ideal Poisson (λ=${lambda2.toFixed(1)})`,
+            data: theoreticalData2,
+            backgroundColor: "rgba(54, 162, 235, 0.1)", // Lighter Blue
+            borderColor: "rgba(54, 162, 235, 0.5)",
+            borderWidth: 1,
+            type: 'line',
+            pointRadius: 0,
+            fill: false,
+            tension: 0.2
+        });
+
+        // Plot Empirical Distribution for Emitter 1
         histogramChartInstance.data.datasets.push({
             label: "Empirical Distribution (Emitter 1)",
-            data: data1,
-            backgroundColor: "rgba(220, 20, 60, 0.6)",
-            borderColor: "rgba(220, 20, 60, 1)",
+            data: empiricalData1,
+            backgroundColor: "rgba(255, 99, 132, 0.6)", // Red
+            borderColor: "rgba(255, 99, 132, 1)",
             borderWidth: 1,
+            type: 'bar'
         });
+
+        // Plot Empirical Distribution for Emitter 2
         histogramChartInstance.data.datasets.push({
             label: "Empirical Distribution (Emitter 2)",
-            data: data2,
-            backgroundColor: "rgba(30, 144, 255, 0.6)",
-            borderColor: "rgba(30, 144, 255, 1)",
+            data: empiricalData2,
+            backgroundColor: "rgba(54, 162, 235, 0.6)", // Blue
+            borderColor: "rgba(54, 162, 235, 1)",
             borderWidth: 1,
+            type: 'bar'
         });
     }
 
@@ -577,3 +647,4 @@ function resizeCanvases() {
     // For particle emission, it's more about their initial positions relative to the container.
 }
 window.addEventListener('resize', resizeCanvases); // In case of complex layouts
+print("```")
