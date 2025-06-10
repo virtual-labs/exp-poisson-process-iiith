@@ -12,6 +12,7 @@ Your task is to:
 
 1. **Start with a small value of \( n \)** — the distribution should resemble a Bernoulli/Binomial behavior.
 2. **Gradually increase \( n \)** while keeping \( λ \) fixed — observe how the distribution transforms into a **Poisson distribution**.
+3. **Observe the decrease in the error** of the two distributions as the value of n is increased.
 
 ---
 
@@ -21,12 +22,13 @@ Next, we demonstrate the **superposition (merging)** and **splitting** of Poisso
 
 - Let two independent emitters have average rates \( λ_1 \) and \( λ_2 \).
 - **Merging** the two emitters results in a single Poisson process with rate: λ = λ_1 + λ_2
-- **Splitting** the process probabilistically assigns each event to either of the original sources, effectively recreating the processes with rates \( \lambda_1 \) and \( \lambda_2 \).
+- **Splitting** the process probabilistically assigns each event to either of the original sources, effectively recreating the processes with rates \( λ_1 \) and \( λ_2 \).
 
 Your task is to:
 
 1. **Verify the phenomenon** - by noting the new average rates of emssion before and after splitting/merging.
 2. **Check for by changing value of λ_1 and λ_2** - change the value of λ_1 and λ_2 and verify the phenomenon again.
+3. **Check the splitted distribution** - check the new distributions show poisson process with the correct average rates.
 
 ---
 
