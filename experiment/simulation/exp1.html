@@ -28,102 +28,6 @@
 
   <title>Emergence of Poisson Process</title>
 
-  <style>
-    body {
-      padding-top: 20px;
-    }
-    .white-boxed-panel {
-      background-color: #fff;
-      border: 1px solid #dbdbdb;
-      border-radius: 6px;
-      padding: 1.25rem;
-      margin-bottom: 1.5rem;
-    }
-    /* Tasks heading */
-    .tasks-heading {
-      text-align: center;
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #444;
-    }
-
-    /* Unified top tab bar */
-    .v-tabs ul {
-      display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
-      list-style: none;
-      padding: 0;
-      margin: 0 3%;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .v-tabs li {
-      display: inline-block;
-      margin: 0;
-    }
-
-    .v-tabs a {
-      display: inline-block;
-      padding: 0.75rem 1.25rem;
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
-    }
-
-    .v-tabs li.active > a {
-      color: #3273dc;
-      border-bottom: 3px solid #3273dc;
-    }
-
-    .v-tabs a:hover {
-      background-color: #f0f0f0;
-      border-radius: 4px;
-    }
-
-    .subheading-box {
-      background-color: #f7fdf7;
-      border-left: 4px solid #3c763d;
-      padding: 0.75rem 1rem;
-      margin: 1rem 3% 1.5rem 3%;
-      border-radius: 4px;
-    }
-
-    .subheading-box .title {
-      color: #3c763d;
-      font-size: 1.25rem;
-      margin: 0;
-      font-weight: 600;
-    }
-
-    /* Aligned sliders */
-    .controls-container {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .field {
-      flex: 1;
-      min-width: 280px;
-    }
-
-    .label {
-      display: block;
-      text-align: center;
-      font-weight: 500;
-      margin-bottom: 0.25rem;
-    }
-
-    .value-display {
-      display: block;
-      text-align: center;
-      font-weight: bold;
-      margin-top: 0.3rem;
-    }
-  </style>
 </head>
 
 <body>
@@ -156,7 +60,7 @@
               to the Poisson distribution for \( p = \lambda/n \) as \( n \to \infty \).
             </li>
             <li>
-              Use the sliders below to choose:
+              Use the fields below to choose:
               <ol>
                 <li>\(n\): number of Bernoulli trials</li>
                 <li>\(\lambda\): Poisson mean</li>
@@ -207,17 +111,16 @@
       <span id="displayN" class="value-display">100</span>
     </div>
     <div class="field">
-      <label for="sliderLambda" class="label">Choose \(\lambda\)</label>
+      <label for="inputLambda" class="label">Choose \(\lambda\)</label>
       <input
-        type="range"
-        id="sliderLambda"
-        min="1"
-        max="100"
+        type="number"
+        id="inputLambda"
+        min="0"
+        max="10"
         step="1"
         value="10"
-        class="slider"
+        class="input"
       />
-      <span id="displayLambda" class="value-display">10</span>
     </div>
   </div>
 </div>

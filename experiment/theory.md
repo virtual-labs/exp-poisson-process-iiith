@@ -112,6 +112,8 @@ $$
 
 This proves $N_1(t) \sim \text{Poisson}(p \lambda t)$. Independence follows by construction.
 
+Here please note that in experiments that follow, we will be modifying only \lambda_1 + \lambda_2
+
 ---
 
 ## Interarrival Times in Poisson Process

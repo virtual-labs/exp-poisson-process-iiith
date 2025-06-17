@@ -112,7 +112,7 @@ function updateCombinedChart(n, lambda) {
         comment = `<p>At <strong>n = ${n}</strong> with <strong>λ = ${lambda}</strong>, Binomial (red) and 
                    Poisson (blue) are nearly indistinguishable. The average error is 
                    <strong>${avgErr}</strong>, demonstrating the convergence of 
-                   Binomial\(\bigl(n,\tfrac{λ}{n}\bigr)\) → Poisson\((λ)\).</p>`;
+                   Binomial (n, p) to Poisson (λ) as n increases.</p>`;
     }
     if (window.MathJax && window.MathJax.typesetPromise) {
         MathJax.typesetPromise();
@@ -186,29 +186,35 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const sliderN = document.getElementById('sliderN');
     const displayN = document.getElementById('displayN');
-    const sliderLambda = document.getElementById('sliderLambda');
-    const displayLambda = document.getElementById('displayLambda');
+    const inputLambda = document.getElementById('inputLambda'); // <- NEW
+    // const sliderLambda = document.getElementById('sliderLambda'); // REMOVE
+    // const displayLambda = document.getElementById('displayLambda'); // REMOVE
 
-    // When n‐slider changes:
+    // When n slider changes:
     sliderN.addEventListener('input', (e) => {
         const nVal = parseInt(e.target.value, 10);
         displayN.textContent = nVal;
 
-        // Ensure λ's max ≤ nVal
-        sliderLambda.max = nVal;
-        if (parseInt(sliderLambda.value, 10) > nVal) {
-            sliderLambda.value = nVal;
-            displayLambda.textContent = nVal;
+        // Update the combined chart with the new n and current λ
+        const lambda = parseFloat(inputLambda.value);
+        if (lambda > nVal) {
+            inputLambda.value = nVal;
         }
-
-        // Update the combined chart
-        updateCombinedChart(nVal, parseInt(sliderLambda.value, 10));
+        updateCombinedChart(nVal, parseFloat(inputLambda.value)); 
     });
 
-    // When λ‐slider changes:
-    sliderLambda.addEventListener('input', (e) => {
-        const lambdaVal = parseInt(e.target.value, 10);
-        displayLambda.textContent = lambdaVal;
-        updateCombinedChart(parseInt(sliderN.value, 10), lambdaVal);
+    // When λ number input changes:
+    inputLambda.addEventListener('input', (e) => {
+        let lambda = parseFloat(e.target.value);
+        const nVal = parseInt(sliderN.value, 10);
+        if (lambda > nVal) {
+            lambda = nVal;
+            inputLambda.value = nVal;
+        }
+        if (lambda < 0) {
+            lambda = 0;
+            inputLambda.value = 0;
+        }
+        updateCombinedChart(nVal, lambda);
     });
 });

@@ -3,6 +3,10 @@
 const emitCanvas = document.getElementById("emitCanvas");
 const emitCtx = emitCanvas.getContext("2d");
 const animationContainer = document.getElementById("animationContainer"); // For positioning nuclei
+const pSlider = document.getElementById("p");
+const pVal = document.getElementById("pVal");
+
+let p = 0.5; // Default p
 
 // Chart contexts
 const lineChartCtx = document.getElementById("lineChart").getContext("2d");
@@ -15,6 +19,9 @@ let histogramChartInstance;
 let lambda1 = 6,
     lambda2 = 4,
     mode = "merging"; // 'merging' or 'splitting'
+
+
+
 
 // Running summary stats
 let total1 = 0,
