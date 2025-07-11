@@ -98,23 +98,29 @@ function updateCombinedChart(n, lambda) {
     avgDiv.innerHTML = `Average absolute error: <span style="color: #3273dc;">${avgErr}</span>`;
 
     // Fill in Observations
-    const obsDiv = document.getElementById('observations');
-    let comment = '';
-    if (n < 50) {
-        comment = `<p>For <strong>n = ${n}</strong> and <strong>λ = ${lambda}</strong>, 
-                   the Binomial PMF (red) still differs noticeably from Poisson (blue). The mean error 
-                   is <strong>${avgErr}</strong>, and you can see deviations at multiple k‐values.</p>`;
-    } else if (n < 200) {
-        comment = `<p>With <strong>n = ${n}</strong>, Binomial\((n,\tfrac{λ}{n})\) (red) is beginning to 
-                   resemble Poisson\((λ)\) (blue). The average error is <strong>${avgErr}</strong>, 
-                   and deviations are mostly in the tails.</p>`;
-    } else {
-        comment = `<p>At <strong>n = ${n}</strong> with <strong>λ = ${lambda}</strong>, Binomial (red) and 
-                   Poisson (blue) are nearly indistinguishable. The average error is 
-                   <strong>${avgErr}</strong>, demonstrating the convergence of 
-                   Binomial\(\bigl(n,\frac{λ}{n}\bigr)\) → Poisson\((λ)\).</p>`;
-    }
-    obsDiv.innerHTML = comment;
+const obsDiv = document.getElementById('observations');
+let comment = '';
+
+if (n < 50) {
+  comment = `<p>For <strong>n = ${n}</strong> and <strong>λ = ${lambda}</strong>, 
+             the Binomial PMF (red) still differs noticeably from Poisson (blue). 
+             The mean error is <strong>${avgErr}</strong>, and you can see deviations at multiple k-values.</p>`;
+} else if (n < 200) {
+  comment = `<p>With <strong>n = ${n}</strong>, Binomial\\((n,\\tfrac{λ}{n})\\) (red) is beginning to 
+             resemble Poisson\\((λ)\\) (blue). The average error is <strong>${avgErr}</strong>, 
+             and deviations are mostly in the tails.</p>`;
+} else {
+  comment = `<p>At <strong>n = ${n}</strong> with <strong>λ = ${lambda}</strong>, Binomial (red) and 
+             Poisson (blue) are nearly indistinguishable. The average error is <strong>${avgErr}</strong>, 
+             demonstrating the convergence of Binomial\\(\\bigl(n,\\frac{λ}{n}\\bigr)\\) → Poisson\\((λ)\\).</p>`;
+}
+
+obsDiv.innerHTML = comment;
+
+// Trigger MathJax rendering if available
+if (window.MathJax) {
+  MathJax.typesetPromise([obsDiv]);
+}
 }
 
 // Initialize the combined Chart.js chart when the page loads
@@ -144,6 +150,36 @@ function initializeCombinedChart() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+
+            resizeDelay: 2, // Debounce resize events (ms)
+            onResize: function(chart, size) {
+                // Optionally, you can do custom actions here if needed
+                // For now, just update the chart to fit new size   
+                chart.options.scales.y.max = Math.max(...chart.data.datasets[0].data, ...chart.data.datasets[1].data) * 1.1;
+                chart.update();
+                // Trigger MathJax typeset if available
+                if (window.MathJax) {
+                    MathJax.typesetPromise([document.getElementById('avgError'), document.getElementById('observations')]);
+                }
+                // Ensure the chart is resized properly
+                chart.resize();
+            },
+
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            elements: {
+                bar: {
+                    borderWidth: 2,
+                    borderRadius: 1
+                }
+            },
+            animation: {
+                duration: 5, // Animation duration in milliseconds
+                easing: 'easeInOutQuad' // Easing function for smooth transitions
+            },
             plugins: {
                 title: {
                     display: true,
@@ -172,8 +208,8 @@ function initializeCombinedChart() {
         }
     });
 
-    // Initial draw with default parameters (n=100, λ=10)
-    updateCombinedChart(100, 10);
+    // Initial draw with default parameters (n=150, λ=10)
+    updateCombinedChart(150, 10);
 }
 
 // Hook up the sliders once DOM is loaded
@@ -182,29 +218,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const sliderN = document.getElementById('sliderN');
     const displayN = document.getElementById('displayN');
-    const sliderLambda = document.getElementById('sliderLambda');
-    const displayLambda = document.getElementById('displayLambda');
+    const inputLambda = document.getElementById('inputLambda');
 
-    // When n‐slider changes:
+   // When n slider changes:
     sliderN.addEventListener('input', (e) => {
         const nVal = parseInt(e.target.value, 10);
         displayN.textContent = nVal;
 
-        // Ensure λ's max ≤ nVal
-        sliderLambda.max = nVal;
-        if (parseInt(sliderLambda.value, 10) > nVal) {
-            sliderLambda.value = nVal;
-            displayLambda.textContent = nVal;
+        // Update the combined chart with the new n and current λ
+        const lambda = parseFloat(inputLambda.value);
+        if (lambda > nVal) {
+            inputLambda.value = nVal;
         }
-
-        // Update the combined chart
-        updateCombinedChart(nVal, parseInt(sliderLambda.value, 10));
+        updateCombinedChart(nVal, parseFloat(inputLambda.value)); 
     });
 
-    // When λ‐slider changes:
-    sliderLambda.addEventListener('input', (e) => {
-        const lambdaVal = parseInt(e.target.value, 10);
-        displayLambda.textContent = lambdaVal;
-        updateCombinedChart(parseInt(sliderN.value, 10), lambdaVal);
+     // When λ number input changes:
+    inputLambda.addEventListener('input', (e) => {
+        let lambda = parseFloat(e.target.value);
+        const nVal = parseInt(sliderN.value, 10);
+        if (lambda > nVal) {
+            lambda = nVal;
+            inputLambda.value = nVal;
+        }
+        if (lambda < 0) {
+            lambda = 0;
+            inputLambda.value = 0;
+        }
+        updateCombinedChart(nVal, lambda);
     });
 });

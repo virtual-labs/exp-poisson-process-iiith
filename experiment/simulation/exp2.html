@@ -4,220 +4,35 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Merging and Splitting of Poisson Process</title>
-
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css"
-  />
-  <link rel="stylesheet" href="./css/css1.css" /> 
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
+  <link rel="stylesheet" href="./css/css1.css" />
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
-  <style>
-    body {
-      padding-top: 20px;
-    }
-
-    .tasks-heading {
-      text-align: center;
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #444;
-    }
-
-    .v-tabs ul {
-      display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
-      list-style: none;
-      padding: 0;
-      margin: 0 3%;
-      border-bottom: 1px solid #ddd;
-    }
-    .v-tabs li {
-      display: inline-block;
-      margin: 0;
-    }
-    .v-tabs a {
-      display: inline-block;
-      padding: 0.75rem 1.25rem;
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
-    }
-    .v-tabs li.active > a {
-      color: #3273dc;
-      border-bottom: 3px solid #3273dc;
-    }
-    .v-tabs a:hover {
-      background-color: #f0f0f0;
-      border-radius: 4px;
-    }
-    .subheading-box {
-      background-color: #f7fdf7;
-      border-left: 4px solid #3c763d;
-      padding: 0.75rem 1rem;
-      margin: 1rem 3% 1.5rem 3%;
-      border-radius: 4px;
-    }
-    .subheading-box .title {
-      color: #3c763d;
-      font-size: 1.25rem;
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .controls-container {
-      display: flex;
-      justify-content: space-around; /* Distributes space between items */
-      align-items: center;    /* Vertically center items */
-      flex-wrap: wrap;
-      gap: 1.5rem; /* Increased gap for tidiness */
-      padding: 0.5rem 0; /* Padding for the container itself */
-    }
-    .field {
-      flex: 1; /* Allows fields to grow */
-      min-width: 250px; /* Minimum width before wrapping */
-      max-width: 300px; /* Maximum width to prevent excessive stretching */
-    }
-    .label {
-      display: block;
-      text-align: center;
-      font-weight: 500;
-      margin-bottom: 0.25rem;
-    }
-    .value-display {
-      display: block;
-      text-align: center;
-      font-weight: bold;
-      margin-top: 0.3rem;
-    }
-    .slider { /* Copied from your original CSS for exp2 */
-        -webkit-appearance: none;
-        width: 100%;
-        height: 10px;
-        border-radius: 5px;
-        background: #ddd;
-        outline: none;
-    }
-    .slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: #3273dc;
-        cursor: pointer;
-    }
-    .slider::-moz-range-thumb {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: #3273dc;
-        cursor: pointer;
-    }
-
-    .nucleus-img {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      transform: translate(-50%, -50%); /* Center the image on its left/top point */
-    }
-
-    #animationContainer {
-      position: relative;
-      height: 400px; /* Increased height */
-      width: 100%;
-      background-color: #f8f8f8; /* Light background for visibility */
-      border-radius: 4px;
-    }
-    #emitCanvas { 
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: transparent !important;
-      border: none !important;
-    }
-    #lineChart,
-    #histogramChart {
-      width: 100% !important;
-      height: 100% !important;
-    }
-    .chart-wrapper { 
-        position: relative;
-        height: 250px; /* Increased height */
-        margin-bottom: 1rem;
-    }
-    .chart-wrapper:last-child {
-        margin-bottom: 0;
-    }
-
-
-    .buttons.has-addons .button.is-primary {
-      background-color: #3273dc;
-      color: #ffffff;
-      border-color: #3273dc;
-    }
-    .buttons.has-addons .button {
-      border: 1px solid #ddd;
-    }
-    .buttons.has-addons .button:hover:not(.is-primary) { 
-      background-color: #f0f0f0;
-      color: #333;
-    }
-
-    .main-experiment-panel {
-        border: 2px solid #8dc63f !important; /* Matching exp1.html's visual */
-        border-radius: 8px !important;
-        padding-bottom: 10px !important; /* Ensure space at bottom */
-    }
-    .white-boxed-panel {
-        background-color: #fff;
-        border: 1px solid #dbdbdb; /* Standard Bulma card/box border */
-        border-radius: 6px;
-        padding: 1.25rem; /* Consistent padding */
-        margin-bottom: 1.5rem; /* Space below panel */
-    }
-    .white-boxed-panel:last-child {
-        margin-bottom: 0;
-    }
-    .white-boxed-panel .v-datalist-title { /* For Observations panel title */
-        margin-bottom: 0.75rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #eee;
-    }
-
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  <title>Merging and Splitting of Poisson Process</title>
 </head>
 
 <body>
-  <div class="container"> 
 
-    <div class="tasks-heading">Tasks</div>
+  <div class="tasks-heading">Tasks</div>
 
-    <div class="v-tabs">
-      <ul>
-        <li onclick="window.location.href='exp1.html';"><a>Sub Experiment – 1</a></li>
-        <li class="active"><a>Sub Experiment–2</a></li>
-        <li onclick="window.location.href='exp3.html';"><a>Sub Experiment – 3</a></li>
-      </ul>
-    </div>
+  <div class="v-tabs">
+    <ul>
+      <li><a href="exp1.html">Sub Experiment - 1</a></li>
+      <li class="active"><a href="exp2.html">Sub Experiment - 2</a></li>
+      <li><a href="exp3.html">Sub Experiment - 3</a></li>
+    </ul>
+  </div>
 
     <div class="subheading-box">
-      <p class="title">Merging and Splitting of Poisson Process</p>
+      <p class="title">Merging of Poisson Process</p>
     </div>
 
     <div class="columns is-centered">
       <div class="column is-11-desktop is-12-tablet is-12-mobile">
         <div class="v-collapsible-instruction-container v-instruction-container">
-          <div class="v-collapsible is-size-5 v-collapsed">Instructions</div> <!-- v-collapsed to start closed -->
-          <div class="v-content" style="text-align: left; padding: 1rem 10% 0.5rem 10%;">
+          <div class="v-collapsible is-size-5">Instructions</div> <!-- v-collapsed to start closed -->
+          <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
             <ul style="list-style: disc;">
               <li>Two independent Poisson “emitters” (radioactive nuclei) have rates \(\lambda_1\) and \(\lambda_2\).</li>
               <li>
@@ -254,7 +69,7 @@
 
     <div class="columns is-centered">
       <div class="column is-11-desktop is-12-tablet is-12-mobile">
-        <div class="v-datalist-container components-list main-experiment-panel">
+        <div class="v-datalist-container components-list">
           <h3 class="v-datalist-title" style="text-align: center; margin-top: 10px; margin-bottom: 20px;">
             Poisson Merge/Split Simulation
           </h3>
@@ -286,7 +101,7 @@
 
           <div class="columns is-multiline is-variable is-2" style="margin: 0 0.5% 3rem 0.5%;">
             <div class="column is-half">
-              <div class="white-boxed-panel" style="padding: 1rem;">
+              <div class="white-boxed-panel">
                  <h4 class="v-datalist-subtitle" style="text-align:center; margin-bottom: 0.75rem; font-weight: 600;">Live Emission Animation</h4>
                 <div id="animationContainer">
                   <!-- Emitter 1 nucleus -->
@@ -303,7 +118,7 @@
 
             <!-- Right: Charts Panel (White-boxed, two canvases) -->
             <div class="column is-half">
-              <div class="white-boxed-panel" style="padding: 1rem;">
+              <div class="white-boxed-panel">
                 <h4 class="v-datalist-subtitle" style="text-align:center; margin-bottom: 0.75rem; font-weight: 600;">Real-time Data Plots</h4>
                 <!-- Real‐time Line Chart -->
                 <div class="chart-wrapper">
@@ -317,8 +132,8 @@
             </div>
           </div>
 
-          <!-- ========== Observations Panel (White-boxed, styled like Exp 1) ========== -->
-          <div class="white-boxed-panel" style="margin: 0 3% 1.5rem 3%;">
+          <!-- ========== Observations Panel (Styled) ========== -->
+          <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
             <div class="v-datalist-title">Observations</div>
             <div id="observations" style="padding-top: 0.5rem;">
                 <!-- JS will inject content here -->
