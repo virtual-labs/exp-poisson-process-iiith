@@ -98,27 +98,31 @@ function updateCombinedChart(n, lambda) {
     avgDiv.innerHTML = `Average absolute error: <span style="color: #3273dc;">${avgErr}</span>`;
 
     // Fill in Observations
-    const obsDiv = document.getElementById('observations');
-    let comment = '';
-    if (n < 50) {
-        comment = `<p>For <strong>n = ${n}</strong> and <strong>λ = ${lambda}</strong>, 
-                   the Binomial PMF (red) still differs noticeably from Poisson (blue). The mean error 
-                   is <strong>${avgErr}</strong>, and you can see deviations at multiple k‐values.</p>`;
-    } else if (n < 200) {
-        comment = `<p>With <strong>n = ${n}</strong>, Binomial\((n,\tfrac{λ}{n})\) (red) is beginning to 
-                   resemble Poisson\((λ)\) (blue). The average error is <strong>${avgErr}</strong>, 
-                   and deviations are mostly in the tails.</p>`;
-    } else {
-        comment = `<p>At <strong>n = ${n}</strong> with <strong>λ = ${lambda}</strong>, Binomial (red) and 
-                   Poisson (blue) are nearly indistinguishable. The average error is 
-                   <strong>${avgErr}</strong>, demonstrating the convergence of 
-                   Binomial (n, p) to Poisson (λ) as n increases.</p>`;
-    }
-    if (window.MathJax && window.MathJax.typesetPromise) {
-        MathJax.typesetPromise();
-    }
 
-    obsDiv.innerHTML = comment;
+const obsDiv = document.getElementById('observations');
+let comment = '';
+
+if (n < 50) {
+  comment = `<p>For <strong>n = ${n}</strong> and <strong>λ = ${lambda}</strong>, 
+             the Binomial PMF (red) still differs noticeably from Poisson (blue). 
+             The mean error is <strong>${avgErr}</strong>, and you can see deviations at multiple k-values.</p>`;
+} else if (n < 200) {
+  comment = `<p>With <strong>n = ${n}</strong>, Binomial\\((n,\\tfrac{λ}{n})\\) (red) is beginning to 
+             resemble Poisson\\((λ)\\) (blue). The average error is <strong>${avgErr}</strong>, 
+             and deviations are mostly in the tails.</p>`;
+} else {
+  comment = `<p>At <strong>n = ${n}</strong> with <strong>λ = ${lambda}</strong>, Binomial (red) and 
+             Poisson (blue) are nearly indistinguishable. The average error is <strong>${avgErr}</strong>, 
+             demonstrating the convergence of Binomial\\(\\bigl(n,\\frac{λ}{n}\\bigr)\\) → Poisson\\((λ)\\).</p>`;
+}
+
+obsDiv.innerHTML = comment;
+
+// Trigger MathJax rendering if available
+if (window.MathJax) {
+  MathJax.typesetPromise([obsDiv]);
+}
+
 }
 
 // Initialize the combined Chart.js chart when the page loads
@@ -148,6 +152,36 @@ function initializeCombinedChart() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+
+            resizeDelay: 2, // Debounce resize events (ms)
+            onResize: function(chart, size) {
+                // Optionally, you can do custom actions here if needed
+                // For now, just update the chart to fit new size   
+                chart.options.scales.y.max = Math.max(...chart.data.datasets[0].data, ...chart.data.datasets[1].data) * 1.1;
+                chart.update();
+                // Trigger MathJax typeset if available
+                if (window.MathJax) {
+                    MathJax.typesetPromise([document.getElementById('avgError'), document.getElementById('observations')]);
+                }
+                // Ensure the chart is resized properly
+                chart.resize();
+            },
+
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            elements: {
+                bar: {
+                    borderWidth: 2,
+                    borderRadius: 1
+                }
+            },
+            animation: {
+                duration: 5, // Animation duration in milliseconds
+                easing: 'easeInOutQuad' // Easing function for smooth transitions
+            },
             plugins: {
                 title: {
                     display: true,
@@ -176,8 +210,8 @@ function initializeCombinedChart() {
         }
     });
 
-    // Initial draw with default parameters (n=100, λ=10)
-    updateCombinedChart(100, 10);
+    // Initial draw with default parameters (n=150, λ=10)
+    updateCombinedChart(150, 10);
 }
 
 // Hook up the sliders once DOM is loaded
@@ -186,11 +220,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const sliderN = document.getElementById('sliderN');
     const displayN = document.getElementById('displayN');
-    const inputLambda = document.getElementById('inputLambda'); // <- NEW
-    // const sliderLambda = document.getElementById('sliderLambda'); // REMOVE
-    // const displayLambda = document.getElementById('displayLambda'); // REMOVE
 
-    // When n slider changes:
+    const inputLambda = document.getElementById('inputLambda');
+
+   // When n slider changes:
+
     sliderN.addEventListener('input', (e) => {
         const nVal = parseInt(e.target.value, 10);
         displayN.textContent = nVal;
@@ -203,7 +237,9 @@ window.addEventListener('DOMContentLoaded', () => {
         updateCombinedChart(nVal, parseFloat(inputLambda.value)); 
     });
 
-    // When λ number input changes:
+
+     // When λ number input changes:
+
     inputLambda.addEventListener('input', (e) => {
         let lambda = parseFloat(e.target.value);
         const nVal = parseInt(sliderN.value, 10);

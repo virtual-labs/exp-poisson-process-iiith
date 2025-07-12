@@ -5,140 +5,177 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Author: Harsh Kapoor,
-    Purpose: Education and Learning,
-    Content Level: College,
-    An interactive experiment on probability and Poisson process.">
 
-  <title>Merging and Splitting of Poisson Process</title>
-
-  <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
-  <link rel="stylesheet" href="./css/css1.css" />
-
-  <!-- MathJax -->
+  <link rel="stylesheet" href="./css/css2.css" />
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
-  <!-- Chart.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-
+  <title>Merging of Poisson Process</title>
 </head>
 
 <body>
-  <div class="container">
 
     <div class="tasks-heading">Tasks</div>
 
     <div class="v-tabs">
       <ul>
-        <li onclick="window.location.href='exp1.html';"><a>Sub Experiment – 1</a></li>
-        <li class="active"><a>Sub Experiment – 2</a></li>
-        <li onclick="window.location.href='exp3.html';"><a>Sub Experiment – 3</a></li>
+
+        <li><a href="exp1.html">Sub Experiment - 1</a></li>
+        <li class="active"><a href="exp2.html">Sub Experiment - 2</a></li>
+        <li><a href="exp3.html">Sub Experiment - 3</a></li>
+
       </ul>
     </div>
 
     <div class="subheading-box">
-      <p class="title">Merging and Splitting of Poisson Process</p>
+      <p class="title">Merging and Splitting of a Poisson Process</p>
     </div>
 
-    <!-- Instructions -->
-    <div class="columns is-centered">
-      <div class="column">
-        <div class="v-collapsible-instruction-container v-instruction-container">
-          <div class="v-collapsible is-size-5">Instructions</div>
-          <div class="v-content" style="text-align: left; padding: 0 10%;">
-            <ul style="list-style: disc;">
-              <li>Two independent Poisson “emitters” (radioactive nuclei) have rates \(\lambda_1\) and \(\lambda_2\).</li>
-              <li><strong>Merging:</strong> Combine both to generate Poisson(\(\lambda_1 + \lambda_2\)).</li>
-              <li><strong>Splitting:</strong> Independently generate Poisson(\(\lambda_1\)) and Poisson(\(\lambda_2\)).</li>
-              <li>Use sliders to set rates, and choose mode using buttons.</li>
-              <li>Left: animation of emission. Right: line chart + histogram.</li>
-              <li>Observations include theoretical vs. empirical rate and error.</li>
-            </ul>
+    <section class="instructions-section">
+      <div class="columns is-centered">
+        <div class="column is-11-desktop is-12-tablet is-12-mobile">
+          <div class="v-collapsible-instruction-container v-instruction-container">
+            <div class="v-collapsible is-size-5">Instructions</div>
+            <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
+              <ul class="instruction-list">
+                <li>
+                  Two independent Poisson emitters operate at rates 
+                  <span class="math">\(\lambda_1\)</span> and <span class="math">\(\lambda_2\)</span>.
+                </li>
+                <li>
+                  <strong>Merge:</strong> Combines both streams into one with rate <span class="math">\(\lambda_1 + \lambda_2\)</span>. Each second, a Poisson random sample with this parameter is drawn.
+                </li>
+                <li>
+                  Adjust <span class="math">\(\lambda_1\)</span> and <span class="math">\(\lambda_2\)</span> using the sliders. Click “Merge” to see the effect when two poisson processes are merged.
+                </li>
+                <li>
+                  <strong>Left Panel:</strong> Visualizes emitters merging. Each emission releases a particle icon that scatters randomly.
+                </li>
+                <li>
+                  <strong>Right Panel:</strong>:</strong> Two real-time charts:
+                  <ol>
+                    <li>Live line chart: emissions per second.</li>
+                    <li>Histogram: empirical distribution of emission counts.</li>
+                  </ol>
+                </li>
+                <li>
+                  <strong>Observations Panel:</strong>
+                  <ul>
+                    <li>Running average emission rate vs theoretical <span class="math">\(\lambda\)</span>.</li>
+                    <li>Real-time absolute error <span class="math">\(| \text{empirical} - \text{theoretical} |\)</span>.</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+    <br />
 
-    <!-- Simulation Panel -->
-    <div class="columns is-centered">
-      <div class="column is-11-desktop is-12-tablet is-12-mobile">
-        <div class="v-datalist-container components-list main-experiment-panel">
-          <h3 class="v-datalist-title" style="text-align: center; margin: 10px 0 20px;">Poisson Merge/Split Simulation</h3>
+    <section id="page2">
+      <div class="columns is-centered">
+        <div class="column is-11-desktop is-12-tablet is-12-mobile">
+          <div class="v-datalist-container components-list">
+            <h3 class="v-datalist-title" style="text-align: center;">
+              Poisson Process Merging Simulation
+            </h3>
 
-          <!-- Controls -->
-          <div class="white-boxed-panel" style="margin: 0 1% .5rem 1%;">
-            <div class="controls-container">
-              <div class="field">
-                <label for="lambda1" class="label">\(\lambda_1\) (Emitter 1):</label>
-                <input type="range" id="lambda1" min="1" max="30" step="1" value="6" class="slider" />
-                <span id="lambda1Val" class="value-display">6</span>
-              </div>
-              <div class="field">
-                <label for="lambda2" class="label">\(\lambda_2\) (Emitter 2):</label>
-                <input type="range" id="lambda2" min="1" max="30" step="1" value="4" class="slider" />
-                <span id="lambda2Val" class="value-display">4</span>
-              </div>
-              <div class="field">
-                <label class="label">Mode:</label>
-                <div class="buttons has-addons is-centered">
-                  <button id="mergeBtn" class="button is-primary">Merging</button>
-                  <button id="splitBtn" class="button">Splitting</button>
+           
+              <div class="controls-container">
+                <div class="field">
+                  <label for="lambda1" class="label">\(\lambda_1\) (Emitter 1):</label>
+                  <input type="range" id="lambda1" min="1" max="30" step="1" value="10" class="slider" />
+                  <span id="lambda1Val" class="value-display">10</span>
                 </div>
+                <div class="field">
+                  <label for="lambda2" class="label">\(\lambda_2\) (Emitter 2):</label>
+                  <input type="range" id="lambda2" min="1" max="30" step="1" value="5" class="slider" />
+                  <span id="lambda2Val" class="value-display">5</span>
+                </div>
+                <div class="field">
+                  <label class="label">Action:</label>
+                  <div class="buttons is-centered">
+                    <button id="toggleModeBtn" class="button is-medium">Merge</button>
+                  </div>
+               </div>
               </div>
             </div>
-          </div>
 
-          <!-- Animation and Charts -->
-          <section style="width: 63vw; height: 90vh; padding: 1rem;">
-            <div class="columns is-multiline is-variable is-2" style="margin: 0 0.5% 3rem 0.5%;">
-              <!-- Left Panel -->
+            <div class="columns" style="margin: 0 0.5% 1rem 0.5%;">
               <div class="column is-one-third">
                 <div class="white-boxed-panel">
-                  <h4 class="v-datalist-subtitle" style="text-align:center; margin-bottom: 0.75rem; font-weight: 600;">
-                    Live Emission Animation
-                  </h4>
+                  <h4 class="v-datalist-subtitle">Live Emission Animation</h4>
                   <div id="animationContainer">
-                    <img src="./images/atom1.png" alt="Emitter 1" class="nucleus-img" id="nuc1" style="display:none; opacity:0;" />
-                    <img src="./images/atom1.png" alt="Emitter 2" class="nucleus-img" id="nuc2" style="display:none; opacity:0;" />
-                    <img src="./images/atom2.png" alt="Merged Emitter" class="nucleus-img" id="nucMerged" style="display:none; opacity:0;" />
+                    <img src="./images/atom1.png" alt="Emitter 1" class="nucleus-img" id="nuc1" />
+                    <img src="./images/atom1.png" alt="Emitter 2" class="nucleus-img" id="nuc2" />
+                    <img src="./images/atom2.png" alt="Merged" class="nucleus-img" id="nucMerged" />
+
                     <canvas id="emitCanvas"></canvas>
                   </div>
                 </div>
               </div>
 
-              <!-- Right Panel -->
               <div class="column is-two-thirds">
                 <div class="white-boxed-panel">
-                  <h4 class="v-datalist-subtitle" style="text-align:center; margin-bottom: 0.75rem; font-weight: 600;">
-                    Real-time Data Plots
-                  </h4>
-                  <div class="chart-wrapper">
+                  <h4 class="v-datalist-subtitle">Real-time Data Plots</h4>
+                  <div class="chart-wrapper" style="height: 300px;">
                     <canvas id="lineChart"></canvas>
                   </div>
-                  <div class="chart-wrapper">
+                  <div class="chart-wrapper" style="height: 300px; margin-top: 2rem;">
+
                     <canvas id="histogramChart"></canvas>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
 
-          <!-- Observations Panel -->
-          <div class="v-datalist-container components-list canvas-container">
-            <div class="v-datalist-title">Observations</div>
-            <div id="observations"></div>
+
+            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+              <h4 class="v-datalist-subtitle">Observations</h4>
+              <div id="observations" style="padding-top: 0.5rem; text-align: center;"></div>
+            </div>
+
           </div>
 
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Scripts -->
+    </section>
+
+
   <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
   <script src="./js/merge_split.js"></script>
+  <script>
+    // Initialize the sliders and display values
+    const lambda1Slider = document.getElementById('lambda1');
+    const lambda2Slider = document.getElementById('lambda2');
+    const lambda1Val = document.getElementById('lambda1Val');
+    const lambda2Val = document.getElementById('lambda2Val');
+
+    lambda1Slider.oninput = function() {
+      lambda1Val.textContent = this.value;
+      updateCharts();
+    };
+    
+    lambda2Slider.oninput = function() {
+      lambda2Val.textContent = this.value;
+      updateCharts();
+    };
+
+    // Function to update charts based on slider values
+    function updateCharts() {
+      // Logic to update charts goes here
+      console.log(`Updated λ1: ${lambda1Slider.value}, λ2: ${lambda2Slider.value}`);
+    }
+    document.getElementById('toggleModeBtn').addEventListener('click', function() {
+      const mode = this.textContent === 'Merge' ? 'splitting' : 'merging';
+      this.textContent = mode === 'splitting' ? 'Split' : 'Merge';
+      // Logic to toggle between merging and splitting
+      console.log(`Mode changed to: ${mode}`);
+    });
+  </script>
 </body>
 
 </html>

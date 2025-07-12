@@ -24,7 +24,6 @@
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
   <title>Emergence of Poisson Process</title>
 
@@ -50,35 +49,49 @@
 
   <!-- === Instructions Panel === -->
   <div class="columns is-centered">
-    <div class="column">
-      <div class="v-collapsible-instruction-container v-instruction-container">
-        <div class="v-collapsible is-size-5">Instructions</div>
-        <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
-          <ul style="list-style: disc;">
-            <li>
-              This experiment visualizes the convergence of the Binomial distribution
-              to the Poisson distribution for \( p = \lambda/n \) as \( n \to \infty \).
-            </li>
-            <li>
-              Use the fields below to choose:
-              <ol>
-                <li>\(n\): number of Bernoulli trials</li>
-                <li>\(\lambda\): Poisson mean</li>
-              </ol>
-            </li>
-            <li>
-              For the selected \((n, \lambda)\):
-              <ol>
-                <li>Plot Binomial PMF</li>
-                <li>Plot Poisson PMF</li>
-                <li>Compare visually and via average absolute error</li>
-              </ol>
-            </li>
-            <li>
-              As \(n\) grows large, observe the distributions align and error reduces.
-            </li>
-          </ul>
-        </div>
+
+  <div class="column is-11-desktop is-12-tablet is-12-mobile">
+    <div class="v-collapsible-instruction-container v-instruction-container">
+      <div class="v-collapsible is-size-5">Instructions</div>
+      <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
+        
+        <p>
+          This interactive module demonstrates the convergence of the <strong>Binomial distribution</strong>
+          to the <strong>Poisson distribution</strong> when the probability of success <em>p</em> is set as <em>λ / n</em>.
+          As <em>n</em> increases, the Binomial distribution approximates the Poisson distribution more closely.
+        </p>
+
+        <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
+        <ul style="list-style: disc">
+          <li>
+            Visualize and quantify how a Binomial distribution with parameters <em>n</em> and <em>p = λ / n</em>
+            converges to a Poisson distribution with mean <em>λ</em> as <em>n</em> increases.
+          </li>
+        </ul>
+
+        <h4 style="font-weight: 600; font-size: 1.15em;">Controls</h4>
+        <ul style="list-style: disc;">
+          <li>Number of trials (<em>n</em>): Adjustable via the slider (between 100 and 1000)</li>
+          <li>Poisson mean (<em>λ</em>): Adjustable via the number field (between 0 and 100).</li>
+          <li><em>Note:</em> The value of <em>p</em> is computed internally as <em>λ / n</em>.</li>
+        </ul>
+
+        <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
+        <ul style="list-style: disc;">
+          <li>Binomial PMF — shown in <span style="color: #f08080;">red</span>.</li>
+          <li>Poisson PMF — shown in <span style="color: #87cefa;">blue</span>.</li>
+          <li>Average Absolute Error — displayed below the plot.</li>
+        </ul>
+
+        <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
+        <ul style="list-style: disc;">
+          <li>As <em>n</em> increases for a fixed <em>λ</em>, the Binomial distribution approaches the Poisson distribution.</li>
+          <li>The average absolute error quantifies the similarity and decreases with larger <em>n</em>.</li>
+        </ul>
+
+      </div>
+
+
       </div>
     </div>
   </div>
@@ -90,55 +103,57 @@
     <div class="columns is-centered">
       <div class="column is-11-desktop is-12-tablet is-12-mobile">
         <div class="v-datalist-container components-list">
-          <!-- === Sliders Box === -->
-<div class="white-boxed-panel" style="padding: 1.25rem; margin-top: 20px;">
-  <h3 class="v-datalist-title" style="text-align: center;">
-    Binomial ↔ Poisson Emergence
-  </h3>
 
-  <div class="controls-container" style="margin-top: 20px;">
-    <div class="field">
-      <label for="sliderN" class="label">Choose \(n\) (number of trials)</label>
-      <input
-        type="range"
-        id="sliderN"
-        min="10"
-        max="500"
-        step="10"
-        value="100"
-        class="slider"
-      />
-      <span id="displayN" class="value-display">100</span>
-    </div>
-    <div class="field">
-      <label for="inputLambda" class="label">Choose \(\lambda\)</label>
-      <input
-        type="number"
-        id="inputLambda"
-        min="0"
-        max="10"
-        step="1"
-        value="10"
-        class="input"
-      />
-    </div>
-  </div>
-</div>
+          <h3 class="v-datalist-title" style="text-align: center;">
+            Binomial ↔ Poisson Emergence
+          </h3>
 
-<!-- === Chart Box === -->
-<div class="white-boxed-panel" style="padding: 1.25rem; margin-top: 20px;">
-  <div style="display: flex; justify-content: center;">
-    <canvas id="combinedChart" style="width: 100%; max-width: 800px; height: 450px;"></canvas>
-  </div>
-  <div id="avgError" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
-</div>
+          <!-- === Sliders === -->
+          <div class="control-panel" style="margin-top: 20px;">
+            <div class="controls-container">
+              <div class="field">
+                <label for="sliderN" class="label">Choose \(n\) (number of trials)</label>
+                <input
+                  type="range"
+                  id="sliderN"
+                  min="100"
+                  max="1000"
+                  step="10"
+                  value="150"
+                  class="slider"
+                />
+                <span id="displayN" class="value-display">150</span>
+              </div>
+              
+               <div class="field">
+                <label for="inputLambda" class="label">Choose \(\lambda\)</label>
+                  <input
+                    type="number"
+                    id="inputLambda"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="10"
+                    class="input"
+                  />
+                </div>
+              </div>
+          </div>
 
-  
+          <!-- === Chart Panel (Styled) === -->
+          <div class="white-boxed-panel" style="margin: 2px 0.5% 0 0.5%;">
+             <h4 class="v-datalist-subtitle" style="text-align:center; margin-bottom: 1rem; font-weight: 600;">Distribution Comparison</h4>
+              <div class="chart-wrapper" style="height: 500px;">
+                <canvas id="combinedChart"></canvas>
+              </div>
+          </div>
+
+
           <!-- === Error Display === -->
-          <div id="avgError" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+          <div id="avgError" style="text-align: center; margin: 20px 0; font-weight: bold; font-size: 1.1rem;"></div>
 
-          <!-- === Observations === -->
-          <div class="v-datalist-container components-list canvas-container" style="margin-top: 25px;">
+          <!-- === Observations Panel (Styled) === -->
+          <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
             <div class="v-datalist-title">Observations</div>
             <div id="observations"
               style="margin-left: 3%; margin-right: 3%; margin-top: 2%; margin-bottom: 2%; padding: 2px 5px 10px 10px;">
@@ -153,5 +168,6 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
   <script src="./js/poisson.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </body>
 </html>

@@ -7,11 +7,6 @@ body {
     color: #333;
     padding-top: 20px;
 }
-.v-datalist-container.components-list {
-  max-width: 960px;
-  margin: 0 auto;
-}
-
 
 .tasks-heading {
     text-align: center;
@@ -70,21 +65,28 @@ body {
     font-weight: 600;
 }
 
-/* Main container for the experiment section */
 .v-datalist-container.components-list {
     border: 2px solid #8dc63f;
     border-radius: 8px;
-    padding: 1rem 1rem 10px 1rem;
+    padding: 1rem;
     background-color: #fafafa;
 }
-.v-datalist-title {
+
+.v-datalist-title{
     margin-bottom: 0.75rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid #eee;
 }
 
+.v-datalist-subtitle {
+    text-align: center;
+    font-weight: 600;
+    color: #363636;
+    margin-bottom: 1rem;
+}
+
 /* ----------------------------------------
-   Standardized Content Panel (for charts, observations, etc.)
+   Standardized Content Panel
    ---------------------------------------- */
 .white-boxed-panel {
     background-color: #fff;
@@ -92,10 +94,7 @@ body {
     border-radius: 6px;
     padding: 1.25rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-}
-.white-boxed-panel:last-child {
-    margin-bottom: 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 /* ----------------------------------------
@@ -111,7 +110,7 @@ body {
 }
 .field {
     flex: 1;
-    min-width: 280px;
+    min-width: 250px;
     max-width: 350px;
     margin-bottom: 1rem;
 }
@@ -133,7 +132,7 @@ body {
     width: 100%;
     height: 10px;
     border-radius: 5px;
-    background: #ddd;
+    background: #e6e6e6;
     outline: none;
 }
 .slider::-webkit-slider-thumb {
@@ -145,25 +144,9 @@ body {
     background: #3273dc;
     cursor: pointer;
 }
-.slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #3273dc;
-    cursor: pointer;
-}
 
-.buttons.has-addons .button.is-primary {
-    background-color: #3273dc;
-    color: #ffffff;
-    border-color: #3273dc;
-}
-.buttons.has-addons .button {
-    border: 1px solid #ddd;
-}
-.buttons.has-addons .button:hover:not(.is-primary) { 
-    background-color: #f0f0f0;
-    color: #333;
+#toggleModeBtn {
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ----------------------------------------
@@ -174,9 +157,23 @@ body {
     width: 100%;
     min-height: 250px; /* Minimum height for smaller charts */
 }
-#lineChart, #histogramChart, #combinedChart {
-    width: 100% !important;
-    height: 100% !important;
+
+.nucleus-img {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    transition: all 400ms ease-in-out;
+}
+
+#animationContainer {
+    position: relative;
+    width: 100%;
+    height: 624px; /* Match height of right panel */
+    background-color: #fdfdfd;
+    border-radius: 4px;
+    border: 1px dashed #ccc;
+    overflow: hidden;
 }
 
 #observations p {

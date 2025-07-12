@@ -14,7 +14,7 @@ An Introduction to Poisson Process
 :--|:--|
 <b> Institute | <b>  IIIT Hyderabad
 <b> Email id|     <b>  harsh.kapoor@research.iiit.ac.in
-<b> Department |  ECE
+<b> Department |  SPCRC
 
 ### Contributors List
 
