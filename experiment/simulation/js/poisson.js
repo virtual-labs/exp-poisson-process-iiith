@@ -98,6 +98,7 @@ function updateCombinedChart(n, lambda) {
     avgDiv.innerHTML = `Average absolute error: <span style="color: #3273dc;">${avgErr}</span>`;
 
     // Fill in Observations
+
 const obsDiv = document.getElementById('observations');
 let comment = '';
 
@@ -121,6 +122,7 @@ obsDiv.innerHTML = comment;
 if (window.MathJax) {
   MathJax.typesetPromise([obsDiv]);
 }
+
 }
 
 // Initialize the combined Chart.js chart when the page loads
@@ -218,9 +220,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const sliderN = document.getElementById('sliderN');
     const displayN = document.getElementById('displayN');
+
     const inputLambda = document.getElementById('inputLambda');
 
    // When n slider changes:
+
     sliderN.addEventListener('input', (e) => {
         const nVal = parseInt(e.target.value, 10);
         displayN.textContent = nVal;
@@ -233,7 +237,9 @@ window.addEventListener('DOMContentLoaded', () => {
         updateCombinedChart(nVal, parseFloat(inputLambda.value)); 
     });
 
+
      // When λ number input changes:
+
     inputLambda.addEventListener('input', (e) => {
         let lambda = parseFloat(e.target.value);
         const nVal = parseInt(sliderN.value, 10);

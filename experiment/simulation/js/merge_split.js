@@ -1,4 +1,3 @@
-// --------------------------------------
 // 1. References & Global Variables
 // --------------------------------------
 const animationContainer = document.getElementById("animationContainer");
@@ -9,8 +8,10 @@ let lineChartInstance, histogramChartInstance;
 let lambda1 = 10, lambda2 = 5;
 let mode = 'splitting'; // 'splitting' or 'merging'
 
+
 let total1 = 0, total2 = 0, elapsedSeconds = 0;
 let activeParticleCount = 0; // Failsafe counter
+
 
 const HISTOGRAM_DATA_POINTS = 100;
 let lineChartData1 = [], lineChartData2 = [], lineChartDataMerged = [], lineChartLabels = [];
@@ -23,9 +24,11 @@ const toggleModeBtn = document.getElementById("toggleModeBtn");
 
 const factorialCache = [1];
 
+
 // --------------------------------------
 // 2. Utility Functions
 // --------------------------------------
+
 function factorial(k) {
     if (k < 0) return Infinity;
     if (factorialCache[k] !== undefined) return factorialCache[k];
@@ -47,11 +50,13 @@ function samplePoisson(lambda) {
     let p = 1.0, k = 0;
     do { k++; p *= Math.random(); } while (p > L);
     return k - 1;
+
 }
 
 // --------------------------------------
 // 3. Chart Initialization
 // --------------------------------------
+
 function initializeCharts() {
     if (lineChartInstance) lineChartInstance.destroy();
     lineChartInstance = new Chart(lineChartCtx, {
@@ -88,6 +93,7 @@ function initializeCharts() {
 // --------------------------------------
 // 4. Event Listeners & Mode Control
 // --------------------------------------
+
 lambda1Slider.oninput = () => { lambda1 = parseFloat(lambda1Slider.value); lambda1Val.textContent = lambda1; if(mode === 'splitting') resetSimulation(); };
 lambda2Slider.oninput = () => { lambda2 = parseFloat(lambda2Slider.value); lambda2Val.textContent = lambda2; if(mode === 'splitting') resetSimulation(); };
 
@@ -107,6 +113,7 @@ toggleModeBtn.addEventListener('click', () => {
 // --------------------------------------
 // 5. Simulation Core
 // --------------------------------------
+
 let intervalID = null;
 
 function resetSimulation() {
@@ -222,6 +229,7 @@ function updateHistogramChart() {
         histogramChartInstance.data.datasets[5].data = labels.map(k => poissonPMF(lambda1 + lambda2, k) * totalPoints);
     }
     histogramChartInstance.update();
+
 }
 
 function updateObservations() {
@@ -248,6 +256,7 @@ function updateObservations() {
 // --------------------------------------
 // 7. Animation & Positioning
 // --------------------------------------
+
 function updateNucleiPositions(isInitial = false) {
     const panelWidth = animationContainer.offsetWidth, panelHeight = animationContainer.offsetHeight;
     
@@ -316,6 +325,7 @@ function scatterParticle(x, y) {
 // 8. Initial Load
 // --------------------------------------
 window.addEventListener("load", () => {
+
     lambda1Slider.value = lambda1;
     lambda2Slider.value = lambda2;
     lambda1Val.textContent = lambda1;

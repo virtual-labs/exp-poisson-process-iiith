@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]']]
+    },
+    svg: { fontCache: 'global' }
+  };
+</script>
+
 <head>
+  <meta name="description" content="Author: Harsh Kapoor,
+    Purpose: Education and Learning,
+    Content Level: College,
+    A interactive experiment of probability and poisson process in specific.">
+
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +24,9 @@
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+
   <title>Emergence of Poisson Process</title>
+
 </head>
 
 <body>
@@ -32,6 +49,7 @@
 
   <!-- === Instructions Panel === -->
   <div class="columns is-centered">
+
   <div class="column is-11-desktop is-12-tablet is-12-mobile">
     <div class="v-collapsible-instruction-container v-instruction-container">
       <div class="v-collapsible is-size-5">Instructions</div>
@@ -72,6 +90,8 @@
         </ul>
 
       </div>
+
+
       </div>
     </div>
   </div>
@@ -83,6 +103,7 @@
     <div class="columns is-centered">
       <div class="column is-11-desktop is-12-tablet is-12-mobile">
         <div class="v-datalist-container components-list">
+
           <h3 class="v-datalist-title" style="text-align: center;">
             Binomial ↔ Poisson Emergence
           </h3>

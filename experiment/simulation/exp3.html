@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Poisson Process: Interarrival Time Independence</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Poisson Process Interarrival Times</h2>
+  <p>This scatter plot shows pairs of consecutive interarrival times \( (T_i, T_{i+1}) \) from a Poisson process.</p>
+  <canvas id="scatterChart" width="600" height="400"></canvas>
+
+  <h3>Your Analysis</h3>
+  <p>What do you observe? Are longer interarrival times followed by shorter ones, or is there no visible pattern?</p>
+  <textarea id="userInput" rows="5" cols="60" placeholder="Type your observations here..."></textarea>
+  <br><button onclick="alert('Saved: ' + document.getElementById('userInput').value)">Submit</button>
+
+  <script>
+    function generateExponential(rate, count) {
+      const data = [];
+      for (let i = 0; i < count; i++) {
+        const u = Math.random();
+        const x = -Math.log(1 - u) / rate;
+        data.push(x);
+      }
+      return data;
+    }
+
+    function prepareScatterData(interarrivals) {
+      const points = [];
+      for (let i = 0; i < interarrivals.length - 1; i++) {
+        points.push({ x: interarrivals[i], y: interarrivals[i + 1] });
+      }
+      return points;
+    }
+
+    const rate = 100; // Lambda = 1
+    const n = 10000;
+    const interarrivals = generateExponential(rate, n);
+    const scatterData = prepareScatterData(interarrivals);
+
+    const ctx = document.getElementById('scatterChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'T_i vs T_{i+1}',
+          data: scatterData,
+          backgroundColor: 'blue'
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: { display: true, text: 'T_i' },
+            beginAtZero: true
+          },
+          y: {
+            title: { display: true, text: 'T_{i+1}' },
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
