@@ -1,70 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Poisson Process: Interarrival Time Independence</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
+  <link rel="stylesheet" href="./css/css1.css" />
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  <title>Inter-arrival Times of a Poisson Process</title>
 </head>
+
 <body>
-  <h2>Poisson Process Interarrival Times</h2>
-  <p>This scatter plot shows pairs of consecutive interarrival times \( (T_i, T_{i+1}) \) from a Poisson process.</p>
-  <canvas id="scatterChart" width="600" height="400"></canvas>
+  <div class="container">
+    <div class="tasks-heading">Tasks</div>
 
-  <h3>Your Analysis</h3>
-  <p>What do you observe? Are longer interarrival times followed by shorter ones, or is there no visible pattern?</p>
-  <textarea id="userInput" rows="5" cols="60" placeholder="Type your observations here..."></textarea>
-  <br><button onclick="alert('Saved: ' + document.getElementById('userInput').value)">Submit</button>
+    <div class="v-tabs">
+      <ul>
+        <li><a href="exp1.html">Sub Experiment - 1</a></li>
+        <li><a href="exp2.html">Sub Experiment - 2</a></li>
+        <li class="active"><a href="exp3.html">Sub Experiment - 3</a></li>
+      </ul>
+    </div>
 
-  <script>
-    function generateExponential(rate, count) {
-      const data = [];
-      for (let i = 0; i < count; i++) {
-        const u = Math.random();
-        const x = -Math.log(1 - u) / rate;
-        data.push(x);
-      }
-      return data;
-    }
+    <div class="subheading-box">
+      <p class="title">Properties of Inter-arrival Times</p>
+    </div>
 
-    function prepareScatterData(interarrivals) {
-      const points = [];
-      for (let i = 0; i < interarrivals.length - 1; i++) {
-        points.push({ x: interarrivals[i], y: interarrivals[i + 1] });
-      }
-      return points;
-    }
+    <div class="columns is-centered">
+      <div class="column is-11-desktop is-12-tablet is-12-mobile">
+        <div class="v-collapsible-instruction-container v-instruction-container">
+          <div class="v-collapsible is-size-5">Instructions</div>
+          <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
+            <ul style="list-style: disc; font-size: 1em; line-height: 1.6;">
+              <li>
+                This experiment demonstrates two key properties: that inter-arrival times follow an **Exponential distribution** and that they are **independent** of each other.
+              </li>
+              <li>
+                Use the slider to set the Poisson rate (\(\lambda\)) and press **Start**.
+              </li>
+              <li>
+                The **Distribution Analysis** plot shows the histogram of waiting times. Observe how it matches the theoretical Exponential PDF (orange line).
+              </li>
+              <li>
+                The **Independence Analysis** plot shows a scatter plot of each waiting time \(T_i\) against the next one \(T_{i+1}\). A random cloud of points with a flat best-fit line (slope near 0) indicates independence.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
 
-    const rate = 100; // Lambda = 1
-    const n = 10000;
-    const interarrivals = generateExponential(rate, n);
-    const scatterData = prepareScatterData(interarrivals);
+    <section id="page3">
+      <div class="columns is-centered">
+        <div class="column is-11-desktop is-12-tablet is-12-mobile">
+          <div class="v-datalist-container components-list">
+            <h3 class="v-datalist-title" style="text-align: center;">
+              Inter-arrival Time Simulation
+            </h3>
 
-    const ctx = document.getElementById('scatterChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'scatter',
-      data: {
-        datasets: [{
-          label: 'T_i vs T_{i+1}',
-          data: scatterData,
-          backgroundColor: 'blue'
-        }]
-      },
-      options: {
-        scales: {
-          x: {
-            title: { display: true, text: 'T_i' },
-            beginAtZero: true
-          },
-          y: {
-            title: { display: true, text: 'T_{i+1}' },
-            beginAtZero: true
-          }
-        },
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
-  </script>
+            <div class="white-boxed-panel" style="margin: 0 1% 1.5rem 1%;">
+              <div class="controls-container">
+                <div class="field">
+                  <label for="lambda" class="label">Poisson Rate (\(\lambda\)):</label>
+                  <input type="range" id="lambda" min="0.5" max="10" step="0.5" value="2" class="slider" />
+                  <span id="lambdaVal" class="value-display">2.0</span>
+                </div>
+                <div class="field">
+                    <label class="label">Controls:</label>
+                    <div class="buttons has-addons is-centered">
+                      <button id="startBtn" class="button is-primary">Start</button>
+                      <button id="stopBtn" class="button">Stop</button>
+                      <button id="resetBtn" class="button is-danger is-light">Reset</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+                <h4 class="v-datalist-subtitle">Arrivals Timeline</h4>
+                <div id="timelineContainer">
+                  <canvas id="timelineCanvas"></canvas>
+                </div>
+            </div>
+            
+            <!-- Distribution Plot Panel -->
+            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+                <h4 class="v-datalist-subtitle">Distribution Analysis</h4>
+                <div class="chart-wrapper" style="height: 400px;">
+                    <canvas id="histogramChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Independence Plot Panel -->
+            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+                <h4 class="v-datalist-subtitle">Independence Analysis</h4>
+                <div class="chart-wrapper" style="height: 400px;">
+                    <canvas id="scatterChart"></canvas>
+                </div>
+            </div>
+
+            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+              <h4 class="v-datalist-subtitle">Observations</h4>
+              <div id="observations" style="padding-top: 0.5rem;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
+  <script src="./js/ind_exp.js"></script>
 </body>
 </html>
