@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
-  <link rel="stylesheet" href="./css/css1.css" />
+  <link rel="stylesheet" href="./css/css3.css" />
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
@@ -33,18 +33,31 @@
         <div class="v-collapsible-instruction-container v-instruction-container">
           <div class="v-collapsible is-size-5">Instructions</div>
           <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
-            <ul style="list-style: disc; font-size: 1em; line-height: 1.6;">
+             <h4 style="font-weight: 600; font-size: 1.15em;">Theory</h4>
+            <ul style="list-style: disc; font-size: 1em; line-height: 1.6; margin-left: 20px;">
               <li>
-                This experiment demonstrates two key properties: that inter-arrival times follow an **Exponential distribution** and that they are **independent** of each other.
+                <strong>Exponential Distribution:</strong> For a Poisson process with an average event rate of \(\lambda\), the time between consecutive events (the inter-arrival time, \(T\)) is an Exponentially distributed random variable. Its PDF is given by \(f(t) = \lambda e^{-\lambda t}\).
               </li>
+              <li>
+                <strong>Independence:</strong> A key property of the Poisson process is that its inter-arrival times are independent. The time you wait for the next event does not depend on how long you've already waited.
+              </li>
+              <li>
+                <strong>Testing Independence:</strong> We can visually test for independence by creating a scatter plot of consecutive inter-arrival times, \((T_i, T_{i+1})\). If the times are independent, the points should form a random "cloud" with no discernible pattern. The slope of a best-fit line through this cloud should be close to **zero**.
+              </li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em; margin-top: 1rem;">Procedure</h4>
+             <ul style="list-style: disc; font-size: 1em; line-height: 1.6; margin-left: 20px;">
               <li>
                 Use the slider to set the Poisson rate (\(\lambda\)) and press **Start**.
               </li>
               <li>
-                The **Distribution Analysis** plot shows the histogram of waiting times. Observe how it matches the theoretical Exponential PDF (orange line).
+                Observe the timeline as events appear in real-time. The timeline shows absolute time and will pan as the simulation progresses.
               </li>
               <li>
-                The **Independence Analysis** plot shows a scatter plot of each waiting time \(T_i\) against the next one \(T_{i+1}\). A random cloud of points with a flat best-fit line (slope near 0) indicates independence.
+                The Distribution Analysisplot compares the histogram of waiting times to the theoretical Exponential PDF (orange line).
+              </li>
+              <li>
+                The Independence Analysis plot shows the scatter plot. Observe how the best-fit line remains nearly horizontal (slope ≈ 0).
               </li>
             </ul>
           </div>
@@ -61,7 +74,7 @@
               Inter-arrival Time Simulation
             </h3>
 
-            <div class="white-boxed-panel" style="margin: 0 1% 1.5rem 1%;">
+            <div class="white-boxed-panel">
               <div class="controls-container">
                 <div class="field">
                   <label for="lambda" class="label">Poisson Rate (\(\lambda\)):</label>
@@ -79,30 +92,28 @@
               </div>
             </div>
 
-            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+            <div class="white-boxed-panel">
                 <h4 class="v-datalist-subtitle">Arrivals Timeline</h4>
                 <div id="timelineContainer">
                   <canvas id="timelineCanvas"></canvas>
                 </div>
             </div>
             
-            <!-- Distribution Plot Panel -->
-            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+            <div class="white-boxed-panel">
                 <h4 class="v-datalist-subtitle">Distribution Analysis</h4>
-                <div class="chart-wrapper" style="height: 400px;">
+                <div class="chart-wrapper">
                     <canvas id="histogramChart"></canvas>
                 </div>
             </div>
             
-            <!-- Independence Plot Panel -->
-            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+            <div class="white-boxed-panel">
                 <h4 class="v-datalist-subtitle">Independence Analysis</h4>
-                <div class="chart-wrapper" style="height: 400px;">
+                <div class="chart-wrapper">
                     <canvas id="scatterChart"></canvas>
                 </div>
             </div>
 
-            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+            <div class="white-boxed-panel">
               <h4 class="v-datalist-subtitle">Observations</h4>
               <div id="observations" style="padding-top: 0.5rem;"></div>
             </div>

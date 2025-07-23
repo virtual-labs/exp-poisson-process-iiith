@@ -26,6 +26,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
 
   <title>Emergence of Poisson Process</title>
+  
+  <style>
+    .error-message {
+        color: #dc3545; /* A standard red color for errors */
+        font-size: 0.9rem;
+        font-weight: bold;
+        display: block;
+        text-align: center;
+        margin-top: 5px;
+        height: 1.2rem; /* Reserve space to prevent layout shift */
+    }
+  </style>
 
 </head>
 
@@ -52,7 +64,7 @@
 
   <div class="column is-11-desktop is-12-tablet is-12-mobile">
     <div class="v-collapsible-instruction-container v-instruction-container">
-      <div class="v-collapsible is-size-5">Instructions</div>
+      <div class="v-collapsible is-size-4">Instructions</div>
       <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
         
         <p>
@@ -71,22 +83,22 @@
 
         <h4 style="font-weight: 600; font-size: 1.15em;">Controls</h4>
         <ul style="list-style: disc;">
-          <li>Number of trials (<em>n</em>): Adjustable via the slider (between 100 and 1000)</li>
-          <li>Poisson mean (<em>λ</em>): Adjustable via the number field (between 0 and 100).</li>
-          <li><em>Note:</em> The value of <em>p</em> is computed internally as <em>λ / n</em>.</li>
+          <li>Number of trials (<em>n</em>): Adjustable via the slider (between 10 and 1000)</li>
+          <li>Poisson mean (<em>λ</em>): Adjustable via the number field (between 0 and 50).</li>
+          <li><em>Note:</em> The value of λ cannot be greater than n.</li>
         </ul>
 
         <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
         <ul style="list-style: disc;">
           <li>Binomial PMF — shown in <span style="color: #f08080;">red</span>.</li>
           <li>Poisson PMF — shown in <span style="color: #87cefa;">blue</span>.</li>
-          <li>Average Absolute Error — displayed below the plot.</li>
+          <li>Average & Maximum Absolute Error — displayed below the plot.</li>
         </ul>
 
         <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
         <ul style="list-style: disc;">
           <li>As <em>n</em> increases for a fixed <em>λ</em>, the Binomial distribution approaches the Poisson distribution.</li>
-          <li>The average absolute error quantifies the similarity and decreases with larger <em>n</em>.</li>
+          <li>The average and maximum absolute errors quantify the similarity and decrease with larger <em>n</em>.</li>
         </ul>
 
       </div>
@@ -116,13 +128,13 @@
                 <input
                   type="range"
                   id="sliderN"
-                  min="100"
+                  min="10"
                   max="1000"
                   step="10"
-                  value="150"
+                  value="50"
                   class="slider"
                 />
-                <span id="displayN" class="value-display">150</span>
+                <span id="displayN" class="value-display">50</span>
               </div>
               
                <div class="field">
@@ -131,11 +143,12 @@
                     type="number"
                     id="inputLambda"
                     min="0"
-                    max="100"
+                    max="50"
                     step="1"
                     value="10"
                     class="input"
                   />
+                  <span id="lambdaError" class="error-message"></span>
                 </div>
               </div>
           </div>

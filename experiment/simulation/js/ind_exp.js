@@ -11,8 +11,10 @@ let lambda = 2.0;
 
 // Simulation state
 let simulationIsRunning = false;
-let lastArrivalTime = 0, totalElapsedTime = 0, arrivalCount = 0, nextArrivalTime = 0;
+let totalElapsedTime = 0, arrivalCount = 0;
+let lastArrivalTime = 0, nextEventTime = 0; // Use absolute event times
 let interArrivalTimes = [];
+let arrivalTimestamps = []; // Store absolute timestamps of arrivals
 
 // DOM Elements
 const lambdaSlider = document.getElementById("lambda"), lambdaVal = document.getElementById("lambdaVal");
@@ -35,9 +37,9 @@ function exponentialPDF(x, rate) {
 }
 
 function calculateLinearRegression(points) {
-    if (points.length < 2) return { slope: 0, correlation: 0 };
+    if (points.length < 2) return { slope: 0 };
 
-    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     const n = points.length;
 
     for (const p of points) {
@@ -45,17 +47,13 @@ function calculateLinearRegression(points) {
         sumY += p.y;
         sumXY += p.x * p.y;
         sumX2 += p.x * p.x;
-        sumY2 += p.y * p.y;
     }
 
     const numerator = n * sumXY - sumX * sumY;
     const denominator = n * sumX2 - sumX * sumX;
     const slope = denominator === 0 ? 0 : numerator / denominator;
     
-    const rDenominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
-    const correlation = rDenominator === 0 ? 0 : numerator / rDenominator;
-
-    return { slope, correlation };
+    return { slope };
 }
 
 // --------------------------------------
@@ -65,33 +63,22 @@ function initializeCharts() {
     if (histogramChart) histogramChart.destroy();
     histogramChart = new Chart(histogramChartCtx, {
         type: 'bar',
-        data: {
-            labels: [],
-            datasets: [
-                { label: 'Empirical Distribution', data: [], backgroundColor: 'rgba(30, 144, 255, 0.6)' },
-                { label: 'Theoretical Exponential PDF', data: [], type: 'line', borderColor: 'rgba(255, 159, 64, 1)', borderWidth: 3, pointRadius: 0, fill: false }
-            ]
-        },
+        data: { labels: [], datasets: [ { label: 'Empirical Distribution', data: [], backgroundColor: 'rgba(30, 144, 255, 0.6)' }, { label: 'Theoretical Exponential PDF', data: [], type: 'line', borderColor: 'rgba(255, 159, 64, 1)', borderWidth: 3, pointRadius: 0, fill: false } ] },
         options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: "Inter-arrival Time (T)" }}, y: { title: { display: true, text: "Frequency (Count)" }, beginAtZero: true }}}
     });
 
     if (scatterChart) scatterChart.destroy();
     scatterChart = new Chart(scatterChartCtx, {
         type: 'scatter',
-        data: {
-            datasets: [
-                { label: 'T_i vs T_{i+1}', data: [], backgroundColor: 'rgba(220, 20, 60, 0.7)' },
-                { label: 'Best-fit Line', data: [], type: 'line', borderColor: 'rgba(0, 0, 0, 0.8)', borderWidth: 2, pointRadius: 0, fill: false }
-            ]
-        },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'T_i' }}, y: { title: { display: true, text: 'T_{i+1}' }}}}
+        data: { datasets: [ { label: 'T_i vs T_{i+1}', data: [], backgroundColor: 'rgba(220, 20, 60, 0.7)' }, { label: 'Best-fit Line', data: [], type: 'line', borderColor: 'rgba(0, 0, 0, 0.8)', borderWidth: 2, pointRadius: 0, fill: false } ] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'T_i' }, min: 0 }, y: { title: { display: true, text: 'T_{i+1}' }, min: 0 } } }
     });
 }
 
 function resizeCanvas() {
     const container = document.getElementById('timelineContainer');
     timelineCanvas.width = container.offsetWidth;
-    timelineCanvas.height = 100;
+    timelineCanvas.height = 110; // Match CSS
     drawTimeline();
 }
 
@@ -101,40 +88,34 @@ function resizeCanvas() {
 lambdaSlider.oninput = () => {
     lambda = parseFloat(lambdaSlider.value);
     lambdaVal.textContent = lambda.toFixed(1);
-    if (!simulationIsRunning) {
-        updateAllVisuals();
-    }
+    if (!simulationIsRunning) updateAllVisuals();
 };
 
 startBtn.addEventListener('click', () => {
     if (simulationIsRunning) return;
     simulationIsRunning = true;
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    lambdaSlider.disabled = true;
-    if (lastArrivalTime === 0) nextArrivalTime = exponentialRandom(lambda);
+    startBtn.disabled = true; stopBtn.disabled = false; lambdaSlider.disabled = true;
+    if (arrivalCount === 0) { // First start or after reset
+        nextEventTime = totalElapsedTime + exponentialRandom(lambda);
+    }
     requestAnimationFrame(runTimeStep);
 });
 
 stopBtn.addEventListener('click', () => {
     simulationIsRunning = false;
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    lambdaSlider.disabled = false;
+    startBtn.disabled = false; stopBtn.disabled = true; lambdaSlider.disabled = false;
 });
 
 resetBtn.addEventListener('click', () => {
     simulationIsRunning = false;
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    lambdaSlider.disabled = false;
-    lastArrivalTime = 0; totalElapsedTime = 0; arrivalCount = 0; nextArrivalTime = 0;
-    interArrivalTimes = [];
+    startBtn.disabled = false; stopBtn.disabled = true; lambdaSlider.disabled = false;
+    totalElapsedTime = 0; arrivalCount = 0; lastArrivalTime = 0; nextEventTime = 0;
+    interArrivalTimes = []; arrivalTimestamps = [];
     updateAllVisuals();
 });
 
 // --------------------------------------
-// 5. Simulation Core
+// 5. Simulation Core (Robust Logic)
 // --------------------------------------
 let animationFrameId;
 
@@ -146,18 +127,22 @@ function runTimeStep() {
     
     const timeIncrement = ANIMATION_TICK_MS / 1000;
     totalElapsedTime += timeIncrement;
-    nextArrivalTime -= timeIncrement;
 
-    if (nextArrivalTime <= 0) {
-        const interArrivalTime = (totalElapsedTime - lastArrivalTime) + nextArrivalTime;
+    if (totalElapsedTime >= nextEventTime) {
+        const interArrivalTime = nextEventTime - lastArrivalTime;
         interArrivalTimes.push(interArrivalTime);
-        lastArrivalTime = totalElapsedTime;
+        arrivalTimestamps.push(nextEventTime);
+        
+        lastArrivalTime = nextEventTime;
         arrivalCount++;
-        nextArrivalTime = exponentialRandom(lambda);
+        
+        nextEventTime = lastArrivalTime + exponentialRandom(lambda);
+        
         updateAllVisuals();
+    } else {
+        drawTimeline();
     }
     
-    drawTimeline();
     animationFrameId = requestAnimationFrame(runTimeStep);
 }
 
@@ -171,34 +156,68 @@ function updateAllVisuals() {
     updateObservations();
 }
 
+/**
+ * [UPDATED] Draws a visually enhanced, advancing timeline.
+ */
 function drawTimeline() {
     const w = timelineCanvas.width, h = timelineCanvas.height;
     timelineCtx.clearRect(0, 0, w, h);
-    timelineCtx.strokeStyle = '#333';
-    timelineCtx.lineWidth = 2;
+
+    const timeWindow = 30;
+    const panInterval = 10;
+    const canvasWidth = w - 20;
+
+    const viewEndTime = Math.max(timeWindow, Math.ceil(totalElapsedTime / panInterval) * panInterval);
+    const viewStartTime = viewEndTime - timeWindow;
+
+    // --- Draw Main Axis (Thicker) ---
+    timelineCtx.strokeStyle = '#555';
+    timelineCtx.lineWidth = 3;
     timelineCtx.beginPath();
     timelineCtx.moveTo(10, h / 2);
     timelineCtx.lineTo(w - 10, h / 2);
     timelineCtx.stroke();
+
+    // --- Draw Ticks and Labels (Larger and Clearer) ---
+    timelineCtx.fillStyle = '#444';
+    timelineCtx.font = 'bold 13px Arial';
+    timelineCtx.textAlign = 'center';
+    const tickInterval = 5;
+    const firstTick = Math.floor(viewStartTime / tickInterval) * tickInterval;
+
+    for (let t = firstTick; t <= viewEndTime; t += tickInterval) {
+        if (t < viewStartTime) continue;
+        const x = 10 + ((t - viewStartTime) / timeWindow) * canvasWidth;
+        timelineCtx.beginPath();
+        timelineCtx.moveTo(x, h / 2 - 8); // Longer ticks
+        timelineCtx.lineTo(x, h / 2 + 8);
+        timelineCtx.stroke();
+        timelineCtx.fillText(`${t.toFixed(0)}s`, x, h / 2 + 25);
+    }
     
-    const timeWindow = 15;
-    let cumulativeTime = 0;
-    for (const t of interArrivalTimes) {
-        cumulativeTime += t;
-        if (totalElapsedTime - cumulativeTime < timeWindow) {
-            const x = w - 10 - ((totalElapsedTime - cumulativeTime) / timeWindow) * (w - 20);
-            timelineCtx.fillStyle = 'rgba(220, 20, 60, 0.8)';
+    // --- Draw Arrival Dots (Larger) ---
+    for (const arrivalTime of arrivalTimestamps) {
+        if (arrivalTime >= viewStartTime && arrivalTime <= viewEndTime) {
+            const x = 10 + ((arrivalTime - viewStartTime) / timeWindow) * canvasWidth;
+            timelineCtx.fillStyle = 'rgba(220, 20, 60, 0.9)';
             timelineCtx.beginPath();
-            timelineCtx.arc(x, h/2, 5, 0, 2 * Math.PI);
+            timelineCtx.arc(x, h / 2, 6, 0, 2 * Math.PI); // Larger dots
             timelineCtx.fill();
         }
     }
-    timelineCtx.strokeStyle = 'rgba(30, 144, 255, 1)';
-    timelineCtx.beginPath();
-    timelineCtx.moveTo(w - 10, h/2 - 15);
-    timelineCtx.lineTo(w - 10, h/2 + 15);
-    timelineCtx.stroke();
+    
+    // --- Draw Current Time Indicator (More Prominent) ---
+    if (totalElapsedTime >= viewStartTime && totalElapsedTime <= viewEndTime) {
+        const x = 10 + ((totalElapsedTime - viewStartTime) / timeWindow) * canvasWidth;
+        timelineCtx.strokeStyle = 'rgba(200, 40, 40, 1)'; // Solid red
+        timelineCtx.lineWidth = 3; // Thicker line
+        timelineCtx.beginPath();
+        timelineCtx.moveTo(x, h / 2 - 12); // Taller line
+        timelineCtx.lineTo(x, h / 2 + 12);
+        timelineCtx.stroke();
+    }
 }
+
 
 function updateHistogramChart() {
     if (interArrivalTimes.length < 2) {
@@ -241,8 +260,7 @@ function updateScatterChart() {
     
     const { slope } = calculateLinearRegression(points);
     const xValues = points.map(p => p.x);
-    const minX = Math.min(...xValues);
-    const maxX = Math.max(...xValues);
+    const minX = Math.min(...xValues), maxX = Math.max(...xValues);
     const avgX = xValues.reduce((a,b) => a+b, 0) / xValues.length;
     const avgY = points.map(p => p.y).reduce((a,b) => a+b, 0) / points.length;
 
@@ -251,6 +269,12 @@ function updateScatterChart() {
         { x: maxX, y: avgY + slope * (maxX - avgX) }
     ];
 
+    const theoreticalMean = 1 / lambda;
+    const allValues = interArrivalTimes;
+    const axisMax = Math.max(...allValues, 3 * theoreticalMean);
+    scatterChart.options.scales.x.max = axisMax;
+    scatterChart.options.scales.y.max = axisMax;
+    
     scatterChart.update();
 }
 
@@ -262,7 +286,7 @@ function updateObservations() {
     for (let i = 0; i < interArrivalTimes.length - 1; i++) {
         points.push({ x: interArrivalTimes[i], y: interArrivalTimes[i + 1] });
     }
-    const { slope, correlation } = calculateLinearRegression(points);
+    const { slope } = calculateLinearRegression(points);
 
     observationsDiv.innerHTML = `
         <div style="text-align: center; max-width: 800px; margin: auto;">
@@ -273,8 +297,7 @@ function updateObservations() {
             <div>
                 <h5 class="is-size-5 has-text-weight-semibold" style="margin-bottom: 0.5rem;">Independence Analysis</h5>
                 <p><strong>Data Pairs (T_i, T_{i+1}):</strong> ${points.length}</p>
-                <p><strong>Best-fit Line Slope:</strong> ${slope.toFixed(4)} (approaches 0 for independent data)</p>
-                <p><strong>Correlation Coefficient (r):</strong> ${correlation.toFixed(4)} (approaches 0 for independent data)</p>
+                <p><strong>Best-fit Line Slope:</strong> ${slope.toFixed(4)} (a slope near 0 indicates no linear relationship)</p>
             </div>
         </div>`;
 }

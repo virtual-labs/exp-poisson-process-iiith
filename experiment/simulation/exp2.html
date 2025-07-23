@@ -11,7 +11,10 @@
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-  <title>Merging of Poisson Process</title>
+  <!-- ADDED: Chart.js Annotation Plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
+  
+  <title>Merging and Splitting of a Poisson Process</title>
 </head>
 
 <body>
@@ -20,11 +23,9 @@
 
     <div class="v-tabs">
       <ul>
-
         <li><a href="exp1.html">Sub Experiment - 1</a></li>
         <li class="active"><a href="exp2.html">Sub Experiment - 2</a></li>
         <li><a href="exp3.html">Sub Experiment - 3</a></li>
-
       </ul>
     </div>
 
@@ -38,33 +39,29 @@
           <div class="v-collapsible-instruction-container v-instruction-container">
             <div class="v-collapsible is-size-5">Instructions</div>
             <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
-              <ul class="instruction-list">
+              <ul style="list-style: disc; margin-left: 20px;">
                 <li>
                   Two independent Poisson emitters operate at rates 
-                  <span class="math">\(\lambda_1\)</span> and <span class="math">\(\lambda_2\)</span>.
+                  \(\lambda_1\) and \(\lambda_2\).
                 </li>
                 <li>
-                  <strong>Merge:</strong> Combines both streams into one with rate <span class="math">\(\lambda_1 + \lambda_2\)</span>. Each second, a Poisson random sample with this parameter is drawn.
+                  <strong>Merge:</strong> Combines both streams into one with rate \(\lambda_1 + \lambda_2\). The moment of merging is marked on the line chart.
                 </li>
                 <li>
-                  Adjust <span class="math">\(\lambda_1\)</span> and <span class="math">\(\lambda_2\)</span> using the sliders. Click “Merge” to see the effect when two poisson processes are merged.
+                  Adjust \(\lambda_1\) and \(\lambda_2\) using the sliders. Click “Merge” to see the effect, and "Reset & Split" to revert.
                 </li>
                 <li>
-                  <strong>Left Panel:</strong> Visualizes emitters merging. Each emission releases a particle icon that scatters randomly.
+                  <strong>Left Panel:</strong> Visualizes emitters merging and splitting.
                 </li>
                 <li>
-                  <strong>Right Panel:</strong>:</strong> Two real-time charts:
+                  <strong>Right Panel:</strong> Two real-time charts:
                   <ol>
                     <li>Live line chart: emissions per second.</li>
-                    <li>Histogram: empirical distribution of emission counts.</li>
+                    <li>Histogram: empirical probability of emission counts vs the theoretical PMF.</li>
                   </ol>
                 </li>
                 <li>
-                  <strong>Observations Panel:</strong>
-                  <ul>
-                    <li>Running average emission rate vs theoretical <span class="math">\(\lambda\)</span>.</li>
-                    <li>Real-time absolute error <span class="math">\(| \text{empirical} - \text{theoretical} |\)</span>.</li>
-                  </ul>
+                  <strong>Observations Panel:</strong> Tracks the running average emission rate vs the theoretical rate \(\lambda\).
                 </li>
               </ul>
             </div>
@@ -79,10 +76,10 @@
         <div class="column is-11-desktop is-12-tablet is-12-mobile">
           <div class="v-datalist-container components-list">
             <h3 class="v-datalist-title" style="text-align: center;">
-              Poisson Process Merging Simulation
+              Poisson Process Simulation
             </h3>
-
-           
+            
+            <div class="white-boxed-panel" style="margin: 0 1% 1.5rem 1%;">
               <div class="controls-container">
                 <div class="field">
                   <label for="lambda1" class="label">\(\lambda_1\) (Emitter 1):</label>
@@ -111,7 +108,6 @@
                     <img src="./images/atom1.png" alt="Emitter 1" class="nucleus-img" id="nuc1" />
                     <img src="./images/atom1.png" alt="Emitter 2" class="nucleus-img" id="nuc2" />
                     <img src="./images/atom2.png" alt="Merged" class="nucleus-img" id="nucMerged" />
-
                     <canvas id="emitCanvas"></canvas>
                   </div>
                 </div>
@@ -124,58 +120,22 @@
                     <canvas id="lineChart"></canvas>
                   </div>
                   <div class="chart-wrapper" style="height: 300px; margin-top: 2rem;">
-
                     <canvas id="histogramChart"></canvas>
                   </div>
                 </div>
               </div>
             </div>
 
-
             <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
               <h4 class="v-datalist-subtitle">Observations</h4>
               <div id="observations" style="padding-top: 0.5rem; text-align: center;"></div>
             </div>
-
           </div>
-
         </div>
       </div>
-
     </section>
-
 
   <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
   <script src="./js/merge_split.js"></script>
-  <script>
-    // Initialize the sliders and display values
-    const lambda1Slider = document.getElementById('lambda1');
-    const lambda2Slider = document.getElementById('lambda2');
-    const lambda1Val = document.getElementById('lambda1Val');
-    const lambda2Val = document.getElementById('lambda2Val');
-
-    lambda1Slider.oninput = function() {
-      lambda1Val.textContent = this.value;
-      updateCharts();
-    };
-    
-    lambda2Slider.oninput = function() {
-      lambda2Val.textContent = this.value;
-      updateCharts();
-    };
-
-    // Function to update charts based on slider values
-    function updateCharts() {
-      // Logic to update charts goes here
-      console.log(`Updated λ1: ${lambda1Slider.value}, λ2: ${lambda2Slider.value}`);
-    }
-    document.getElementById('toggleModeBtn').addEventListener('click', function() {
-      const mode = this.textContent === 'Merge' ? 'splitting' : 'merging';
-      this.textContent = mode === 'splitting' ? 'Split' : 'Merge';
-      // Logic to toggle between merging and splitting
-      console.log(`Mode changed to: ${mode}`);
-    });
-  </script>
 </body>
-
 </html>
