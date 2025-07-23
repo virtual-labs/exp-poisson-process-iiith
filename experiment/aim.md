@@ -7,3 +7,4 @@ The aim of this experiment is to provide students with a comprehensive understan
 - Simulate Poisson processes using computational tools.
 - Analyze real-world phenomena modeled by Poisson processes, such as:
   - Emission of radioactive particles.
+  - Arrival times at queues.
