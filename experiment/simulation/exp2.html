@@ -1,85 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
-  <link rel="stylesheet" href="./css/css2.css" />
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <link rel="stylesheet" href="./css/style.css" /> 
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-  <!-- ADDED: Chart.js Annotation Plugin -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
-  
   <title>Merging and Splitting of a Poisson Process</title>
 </head>
-
 <body>
-
+  <div class="container">
     <div class="tasks-heading">Tasks</div>
-
-    <div class="v-tabs">
-      <ul>
-        <li><a href="exp1.html">Sub Experiment - 1</a></li>
-        <li class="active"><a href="exp2.html">Sub Experiment - 2</a></li>
-        <li><a href="exp3.html">Sub Experiment - 3</a></li>
-      </ul>
-    </div>
-
-    <div class="subheading-box">
-      <p class="title">Merging and Splitting of a Poisson Process</p>
-    </div>
-
-    <section class="instructions-section">
-      <div class="columns is-centered">
-        <div class="column is-11-desktop is-12-tablet is-12-mobile">
-          <div class="v-collapsible-instruction-container v-instruction-container">
-            <div class="v-collapsible is-size-5">Instructions</div>
-            <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
-              <ul style="list-style: disc; margin-left: 20px;">
-                <li>
-                  Two independent Poisson emitters operate at rates 
-                  \(\lambda_1\) and \(\lambda_2\).
-                </li>
-                <li>
-                  <strong>Merge:</strong> Combines both streams into one with rate \(\lambda_1 + \lambda_2\). The moment of merging is marked on the line chart.
-                </li>
-                <li>
-                  Adjust \(\lambda_1\) and \(\lambda_2\) using the sliders. Click “Merge” to see the effect, and "Reset & Split" to revert.
-                </li>
-                <li>
-                  <strong>Left Panel:</strong> Visualizes emitters merging and splitting.
-                </li>
-                <li>
-                  <strong>Right Panel:</strong> Two real-time charts:
-                  <ol>
-                    <li>Live line chart: emissions per second.</li>
-                    <li>Histogram: empirical probability of emission counts vs the theoretical PMF.</li>
-                  </ol>
-                </li>
-                <li>
-                  <strong>Observations Panel:</strong> Tracks the running average emission rate vs the theoretical rate \(\lambda\).
-                </li>
-              </ul>
-            </div>
+    <div class="columns is-centered">
+      <div class="column is-11-desktop is-12-tablet is-12-mobile">
+        <div class="v-tabs">
+          <ul>
+            <li><a href="exp1.html">Sub Experiment - 1</a></li>
+            <li class="active"><a href="exp2.html">Sub Experiment - 2</a></li>
+            <li><a href="exp3.html">Sub Experiment - 3</a></li>
+          </ul>
+        </div>
+        <div class="subheading-box">
+          <p class="title">Merging and Splitting of a Poisson Process</p>
+        </div>
+        <div class="v-collapsible-instruction-container v-instruction-container">
+          <div class="v-collapsible is-size-4">Instructions</div>
+          <div class="v-content">
+            <ul style="list-style: disc; margin-left: 20px;">
+              <li>Two independent Poisson emitters operate at rates \(\lambda_1\) and \(\lambda_2\).</li>
+              <li><strong>Merge:</strong> Combines both streams into one with rate \(\lambda_1 + \lambda_2\). The moment of merging is marked on the line chart.</li>
+              <li>Adjust \(\lambda_1\) and \(\lambda_2\) using the sliders. Click “Merge” to see the effect, and "Reset & Split" to revert.</li>
+              <li><strong>Left Panel:</strong> Visualizes emitters merging and splitting.</li>
+              <li><strong>Right Panel:</strong> Two real-time charts: <ol><li>Live line chart: emissions per second.</li><li>Histogram: empirical probability of emission counts vs the theoretical PMF.</li></ol></li>
+              <li><strong>Observations Panel:</strong> Tracks the running average emission rate vs the theoretical rate \(\lambda\).</li>
+            </ul>
           </div>
         </div>
-      </div>
-    </section>
-    <br />
-
-    <section id="page2">
-      <div class="columns is-centered">
-        <div class="column is-11-desktop is-12-tablet is-12-mobile">
+        <br />
+        <section id="page2">
           <div class="v-datalist-container components-list">
-            <h3 class="v-datalist-title" style="text-align: center;">
-              Poisson Process Simulation
-            </h3>
-            
-            <div class="white-boxed-panel" style="margin: 0 1% 1.5rem 1%;">
+            <h3 class="v-datalist-title">Poisson Process Simulation</h3>
+            <div class="white-boxed-panel">
               <div class="controls-container">
                 <div class="field">
                   <label for="lambda1" class="label">\(\lambda_1\) (Emitter 1):</label>
@@ -96,11 +60,10 @@
                   <div class="buttons is-centered">
                     <button id="toggleModeBtn" class="button is-medium">Merge</button>
                   </div>
-               </div>
+                </div>
               </div>
             </div>
-
-            <div class="columns" style="margin: 0 0.5% 1rem 0.5%;">
+            <div class="columns">
               <div class="column is-one-third">
                 <div class="white-boxed-panel">
                   <h4 class="v-datalist-subtitle">Live Emission Animation</h4>
@@ -112,7 +75,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="column is-two-thirds">
                 <div class="white-boxed-panel">
                   <h4 class="v-datalist-subtitle">Real-time Data Plots</h4>
@@ -125,16 +87,16 @@
                 </div>
               </div>
             </div>
-
-            <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
+            <!-- [UNIFIED] Observations panel structure -->
+            <div class="white-boxed-panel">
               <h4 class="v-datalist-subtitle">Observations</h4>
-              <div id="observations" style="padding-top: 0.5rem; text-align: center;"></div>
+              <div id="observations" style="padding: 10px; text-align: center;"></div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
-    </section>
-
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
   <script src="./js/merge_split.js"></script>
 </body>

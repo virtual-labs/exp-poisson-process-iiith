@@ -157,20 +157,21 @@ function updateAllVisuals() {
 }
 
 /**
- * [UPDATED] Draws a visually enhanced, advancing timeline.
+ * [UPDATED] Draws a visually enhanced, advancing timeline with smooth panning.
  */
 function drawTimeline() {
     const w = timelineCanvas.width, h = timelineCanvas.height;
     timelineCtx.clearRect(0, 0, w, h);
 
     const timeWindow = 30;
-    const panInterval = 10;
     const canvasWidth = w - 20;
 
-    const viewEndTime = Math.max(timeWindow, Math.ceil(totalElapsedTime / panInterval) * panInterval);
-    const viewStartTime = viewEndTime - timeWindow;
+    const panTriggerPoint = timeWindow / 2;
+    const viewStartTime = totalElapsedTime > panTriggerPoint 
+        ? totalElapsedTime - panTriggerPoint 
+        : 0;
+    const viewEndTime = viewStartTime + timeWindow;
 
-    // --- Draw Main Axis (Thicker) ---
     timelineCtx.strokeStyle = '#555';
     timelineCtx.lineWidth = 3;
     timelineCtx.beginPath();
@@ -178,41 +179,39 @@ function drawTimeline() {
     timelineCtx.lineTo(w - 10, h / 2);
     timelineCtx.stroke();
 
-    // --- Draw Ticks and Labels (Larger and Clearer) ---
     timelineCtx.fillStyle = '#444';
     timelineCtx.font = 'bold 13px Arial';
     timelineCtx.textAlign = 'center';
+    
     const tickInterval = 5;
-    const firstTick = Math.floor(viewStartTime / tickInterval) * tickInterval;
+    const firstTick = Math.ceil(viewStartTime / tickInterval) * tickInterval;
 
     for (let t = firstTick; t <= viewEndTime; t += tickInterval) {
-        if (t < viewStartTime) continue;
         const x = 10 + ((t - viewStartTime) / timeWindow) * canvasWidth;
+        if (x < 10 || x > w - 10) continue;
         timelineCtx.beginPath();
-        timelineCtx.moveTo(x, h / 2 - 8); // Longer ticks
+        timelineCtx.moveTo(x, h / 2 - 8);
         timelineCtx.lineTo(x, h / 2 + 8);
         timelineCtx.stroke();
         timelineCtx.fillText(`${t.toFixed(0)}s`, x, h / 2 + 25);
     }
     
-    // --- Draw Arrival Dots (Larger) ---
     for (const arrivalTime of arrivalTimestamps) {
         if (arrivalTime >= viewStartTime && arrivalTime <= viewEndTime) {
             const x = 10 + ((arrivalTime - viewStartTime) / timeWindow) * canvasWidth;
             timelineCtx.fillStyle = 'rgba(220, 20, 60, 0.9)';
             timelineCtx.beginPath();
-            timelineCtx.arc(x, h / 2, 6, 0, 2 * Math.PI); // Larger dots
+            timelineCtx.arc(x, h / 2, 6, 0, 2 * Math.PI);
             timelineCtx.fill();
         }
     }
     
-    // --- Draw Current Time Indicator (More Prominent) ---
     if (totalElapsedTime >= viewStartTime && totalElapsedTime <= viewEndTime) {
         const x = 10 + ((totalElapsedTime - viewStartTime) / timeWindow) * canvasWidth;
-        timelineCtx.strokeStyle = 'rgba(200, 40, 40, 1)'; // Solid red
-        timelineCtx.lineWidth = 3; // Thicker line
+        timelineCtx.strokeStyle = 'rgba(200, 40, 40, 1)';
+        timelineCtx.lineWidth = 3;
         timelineCtx.beginPath();
-        timelineCtx.moveTo(x, h / 2 - 12); // Taller line
+        timelineCtx.moveTo(x, h / 2 - 12);
         timelineCtx.lineTo(x, h / 2 + 12);
         timelineCtx.stroke();
     }
@@ -289,7 +288,7 @@ function updateObservations() {
     const { slope } = calculateLinearRegression(points);
 
     observationsDiv.innerHTML = `
-        <div style="text-align: center; max-width: 800px; margin: auto;">
+        <div style="text-align: center; max-width: 800px; margin: auto; font-size: 1.1rem; line-height: 1.7;">
             <div style="margin-bottom: 1.5rem;">
                 <h5 class="is-size-5 has-text-weight-semibold" style="margin-bottom: 0.5rem;">Distribution Analysis</h5>
                 <p><strong>Arrivals Recorded:</strong> ${arrivalCount} | <strong>Theoretical Mean (1/λ):</strong> ${theoreticalMean.toFixed(3)} s | <strong>Sample Mean:</strong> ${sampleMean.toFixed(3)} s</p>
@@ -316,5 +315,8 @@ window.addEventListener("load", () => {
 
 window.addEventListener('resize', () => {
     resizeCanvas();
-    updateAllVisuals();
+    // No need to call updateAllVisuals() here as Chart.js is responsive
+    // and resizeCanvas() already redraws the timeline.
+    // However, keeping it ensures charts also redraw if their containers change size.
+    updateAllVisuals(); 
 });

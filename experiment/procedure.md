@@ -1,42 +1,46 @@
 ### Procedure
 
-#### **Emergence of Poisson Process**
+#### **Sub-Experiment 1: Emergence of Poisson Process**
 
 This experiment demonstrates how a **Poisson Process** emerges from **Repeated Bernoulli Trials** by gradually increasing the number of trials \( n \). The **Binomial distribution** applies when we have a fixed number of events \( n \), each with a constant probability of success \( p \). But what if we don’t know the number of trials? Instead, we know the **average rate of success per unit time**, denoted as:
 
-λ = n.p
+λ = n × p
 
 Here, \( λ \) is the **rate of successes per time unit**. As \( n → ∞ \) and \( p → 0 \), while keeping \( λ \) constant, the **Binomial distribution converges to a Poisson distribution**.
 
 Your task is to:
 
-1. **Start with a small value of \( n \)** — the distribution should resemble a Bernoulli/Binomial behavior.
-2. **Gradually increase \( n \)** while keeping \( λ \) fixed — observe how the distribution transforms into a **Poisson distribution**.
-3. **Observe the decrease in the error** of the two distributions as the value of n is increased.
+1.  **Start with a small value of \( n \)** — the distribution should resemble a Bernoulli/Binomial behavior.
+2.  **Gradually increase \( n \)** while keeping \( λ \) fixed — observe how the two distributions on the chart begin to overlap.
+3.  **Observe the decrease in the error** metrics displayed below the chart as the value of \( n \) is increased, confirming the convergence.
 
 ---
 
-#### **Merging and Splitting of Poisson Processes**
+#### **Sub-Experiment 2: Merging and Splitting of Poisson Processes**
 
-Next, we demonstrate the **superposition (merging)** and **splitting** of Poisson processes using an analogy of radioactive emitters. We have 2 emitters with average rates which can be adjusted.
+Next, we demonstrate the **superposition (merging)** and **splitting** of Poisson processes using an analogy of radioactive emitters. We have 2 emitters with adjustable average rates.
 
-- Let two independent emitters have average rates \( λ_1 \) and \( λ_2 \).
-- **Merging** the two emitters results in a single Poisson process with rate: λ = λ_1 + λ_2
-- **Splitting** the process probabilistically assigns each event to either of the original sources, effectively recreating the processes with rates \( λ_1 \) and \( λ_2 \).
+-   Let two independent emitters have average rates \( λ_1 \) and \( λ_2 \).
+-   **Merging** the two emitters results in a single Poisson process with a new rate: λ = λ₁ + λ₂.
+-   **Splitting** the process reverts to the two independent streams with their original rates.
 
 Your task is to:
 
-1. **Verify the phenomenon** - by noting the new average rates of emssion before and after splitting/merging.
-2. **Check for by changing value of λ_1 and λ_2** - change the value of λ_1 and λ_2 and verify the phenomenon again.
-3. **Check the splitted distribution** - check the new distributions show poisson process with the correct average rates.
+1.  **Verify the merging phenomenon**: Start the simulation and click "Merge". Observe in the "Observations" panel how the combined emission rate approaches the theoretical sum (λ₁ + λ₂).
+2.  **Verify the splitting phenomenon**: Click "Reset & Split". Observe that the two emitters now behave independently, with their rates matching the slider values.
+3.  **Change the rates**: Adjust the sliders for λ₁ and λ₂ and repeat the process to see that the principle holds for different values.
 
 ---
 
-#### **Interarrival Times of the Poisson Process**
+#### **Sub-Experiment 3: Inter-arrival Times of the Poisson Process**
 
-Finally, we show that the **interarrival times** (i.e., the time between successive events) in a Poisson process follow an **Exponential distribution**. Specifically:
+Finally, we show that the **inter-arrival times** (i.e., the time between successive events) in a Poisson process follow an **Exponential distribution**. We also verify that these times are **independent**.
 
-- If the Poisson process has rate \( λ \),
-- Then the interarrival time \( T \) is an **Exponential random variable** with probability density: f_T(t) = λ × exp(–λt),   t ≥ 0
+-   If a Poisson process has rate \( λ \), the inter-arrival time \( T \) is an **Exponential random variable** with probability density: f(t) = λe⁻ˡᵗ.
+-   The independence of inter-arrival times means that the time until the next event does not depend on when the last event occurred.
 
-We simulate this behavior and verify that the histogram of interarrival times matches the exponential distribution.
+Your task is to:
+
+1.  **Set a rate \(λ\)** using the slider and press **Start**.
+2.  **Observe the Distribution Analysis chart**: As events are recorded, watch the blue histogram of sampled inter-arrival times take the shape of the theoretical orange curve (the Exponential PDF).
+3.  **Observe the Independence Analysis chart**: Note that the scatter plot of consecutive inter-arrival times, (Tᵢ, Tᵢ₊₁), forms a random cloud. This indicates no correlation, and the best-fit line's slope should be near zero, confirming independence.

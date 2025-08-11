@@ -5,75 +5,57 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
-  <link rel="stylesheet" href="./css/css3.css" />
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <link rel="stylesheet" href="./css/style.css" /> 
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
   <title>Inter-arrival Times of a Poisson Process</title>
 </head>
-
 <body>
   <div class="container">
     <div class="tasks-heading">Tasks</div>
-
-    <div class="v-tabs">
-      <ul>
-        <li><a href="exp1.html">Sub Experiment - 1</a></li>
-        <li><a href="exp2.html">Sub Experiment - 2</a></li>
-        <li class="active"><a href="exp3.html">Sub Experiment - 3</a></li>
-      </ul>
-    </div>
-
-    <div class="subheading-box">
-      <p class="title">Properties of Inter-arrival Times</p>
-    </div>
-
     <div class="columns is-centered">
       <div class="column is-11-desktop is-12-tablet is-12-mobile">
+        <div class="v-tabs">
+          <ul>
+            <li><a href="exp1.html">Sub Experiment - 1</a></li>
+            <li><a href="exp2.html">Sub Experiment - 2</a></li>
+            <li class="active"><a href="exp3.html">Sub Experiment - 3</a></li>
+          </ul>
+        </div>
+        <div class="subheading-box">
+          <p class="title">Properties of Inter-arrival Times</p>
+        </div>
         <div class="v-collapsible-instruction-container v-instruction-container">
-          <div class="v-collapsible is-size-5">Instructions</div>
-          <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
-             <h4 style="font-weight: 600; font-size: 1.15em;">Theory</h4>
-            <ul style="list-style: disc; font-size: 1em; line-height: 1.6; margin-left: 20px;">
-              <li>
-                <strong>Exponential Distribution:</strong> For a Poisson process with an average event rate of \(\lambda\), the time between consecutive events (the inter-arrival time, \(T\)) is an Exponentially distributed random variable. Its PDF is given by \(f(t) = \lambda e^{-\lambda t}\).
-              </li>
-              <li>
-                <strong>Independence:</strong> A key property of the Poisson process is that its inter-arrival times are independent. The time you wait for the next event does not depend on how long you've already waited.
-              </li>
-              <li>
-                <strong>Testing Independence:</strong> We can visually test for independence by creating a scatter plot of consecutive inter-arrival times, \((T_i, T_{i+1})\). If the times are independent, the points should form a random "cloud" with no discernible pattern. The slope of a best-fit line through this cloud should be close to **zero**.
-              </li>
+          <div class="v-collapsible is-size-4">Instructions</div>
+          <div class="v-content">
+            <p>This module explores two fundamental properties of a <strong>Poisson process</strong>: the distribution of its <strong>inter-arrival times</strong> and their statistical <strong>independence</strong>.</p>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
+            <ul style="list-style: disc">
+              <li>To observe that the time \(T\) between consecutive events in a Poisson process with rate \(\lambda\) follows an Exponential distribution.</li>
+              <li>To visually verify that these inter-arrival times, \(T_i\) and \(T_{i+1}\), are independent of each other.</li>
             </ul>
-            <h4 style="font-weight: 600; font-size: 1.15em; margin-top: 1rem;">Procedure</h4>
-             <ul style="list-style: disc; font-size: 1em; line-height: 1.6; margin-left: 20px;">
-              <li>
-                Use the slider to set the Poisson rate (\(\lambda\)) and press **Start**.
-              </li>
-              <li>
-                Observe the timeline as events appear in real-time. The timeline shows absolute time and will pan as the simulation progresses.
-              </li>
-              <li>
-                The Distribution Analysisplot compares the histogram of waiting times to the theoretical Exponential PDF (orange line).
-              </li>
-              <li>
-                The Independence Analysis plot shows the scatter plot. Observe how the best-fit line remains nearly horizontal (slope ≈ 0).
-              </li>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Controls</h4>
+            <ul style="list-style: disc;">
+              <li><strong>Poisson Rate (\(\lambda\)):</strong> Adjust the average number of arrivals per unit of time using the slider.</li>
+              <li><strong>Start / Stop / Reset:</strong> Control the flow of the simulation.</li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
+            <ul style="list-style: disc;">
+              <li><strong>Arrivals Timeline:</strong> Shows the real-time occurrence of events.</li>
+              <li><strong>Distribution Analysis:</strong> Compares the histogram of observed inter-arrival times (in <span style="color: #1e90ff;">blue</span>) with the theoretical Exponential PDF, \(f(t) = \lambda e^{-\lambda t}\) (in <span style="color: #ff9f40;">orange</span>).</li>
+              <li><strong>Independence Analysis:</strong> A scatter plot of consecutive inter-arrival times \((T_i, T_{i+1})\). Independence is suggested if the points form a random cloud with no clear pattern.</li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
+            <ul style="list-style: disc;">
+              <li>As more events are recorded, the empirical histogram should more closely match the shape of the theoretical exponential curve.</li>
+              <li>The best-fit line in the scatter plot should have a slope close to <strong>zero</strong>, confirming that the length of one waiting period does not predict the length of the next.</li>
             </ul>
           </div>
         </div>
-      </div>
-    </div>
-    <br />
-
-    <section id="page3">
-      <div class="columns is-centered">
-        <div class="column is-11-desktop is-12-tablet is-12-mobile">
+        <br />
+        <section id="page3">
           <div class="v-datalist-container components-list">
-            <h3 class="v-datalist-title" style="text-align: center;">
-              Inter-arrival Time Simulation
-            </h3>
-
+            <h3 class="v-datalist-title">Inter-arrival Time Simulation</h3>
             <div class="white-boxed-panel">
               <div class="controls-container">
                 <div class="field">
@@ -82,47 +64,47 @@
                   <span id="lambdaVal" class="value-display">2.0</span>
                 </div>
                 <div class="field">
-                    <label class="label">Controls:</label>
-                    <div class="buttons has-addons is-centered">
-                      <button id="startBtn" class="button is-primary">Start</button>
-                      <button id="stopBtn" class="button">Stop</button>
-                      <button id="resetBtn" class="button is-danger is-light">Reset</button>
-                    </div>
+                  <label class="label">Controls:</label>
+                  <div class="buttons has-addons is-centered">
+                    <button id="startBtn" class="button is-primary">Start</button>
+                    <button id="stopBtn" class="button">Stop</button>
+                    <button id="resetBtn" class="button is-danger is-light">Reset</button>
+                  </div>
                 </div>
               </div>
             </div>
-
             <div class="white-boxed-panel">
-                <h4 class="v-datalist-subtitle">Arrivals Timeline</h4>
-                <div id="timelineContainer">
-                  <canvas id="timelineCanvas"></canvas>
-                </div>
+              <h4 class="v-datalist-subtitle">Arrivals Timeline</h4>
+              <div id="timelineContainer">
+                <canvas id="timelineCanvas"></canvas>
+              </div>
             </div>
-            
-            <div class="white-boxed-panel">
-                <h4 class="v-datalist-subtitle">Distribution Analysis</h4>
-                <div class="chart-wrapper">
-                    <canvas id="histogramChart"></canvas>
+            <div class="columns is-desktop">
+              <div class="column">
+                <div class="white-boxed-panel">
+                  <h4 class="v-datalist-subtitle">Distribution Analysis</h4>
+                  <div class="chart-wrapper" style="height:450px"><canvas id="histogramChart"></canvas></div>
                 </div>
-            </div>
-            
-            <div class="white-boxed-panel">
-                <h4 class="v-datalist-subtitle">Independence Analysis</h4>
-                <div class="chart-wrapper">
-                    <canvas id="scatterChart"></canvas>
+              </div>
+              <div class="column">
+                <div class="white-boxed-panel">
+                  <h4 class="v-datalist-subtitle">Independence Analysis</h4>
+                  <div class="chart-wrapper" style="height:450px"><canvas id="scatterChart"></canvas></div>
                 </div>
+              </div>
             </div>
-
+            <!-- [UNIFIED] Observations panel structure -->
             <div class="white-boxed-panel">
               <h4 class="v-datalist-subtitle">Observations</h4>
-              <div id="observations" style="padding-top: 0.5rem;"></div>
+              <div id="observations" style="padding: 10px; text-align: center;">
+                <!-- JS content here -->
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
-    </section>
+    </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
   <script src="./js/ind_exp.js"></script>
 </body>

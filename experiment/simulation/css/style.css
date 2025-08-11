@@ -1,3 +1,5 @@
+/* --- UNIFIED STYLESHEET (style.css) --- */
+
 /* ----------------------------------------
    Base & General Styling
    ---------------------------------------- */
@@ -7,11 +9,6 @@ body {
     color: #333;
     padding-top: 20px;
 }
-.v-datalist-container.components-list {
-  max-width: 960px;
-  margin: 0 auto;
-}
-
 
 .tasks-heading {
     text-align: center;
@@ -30,7 +27,7 @@ body {
     white-space: nowrap;
     list-style: none;
     padding: 0;
-    margin: 0 3%;
+    margin: 0;
     border-bottom: 1px solid #ddd;
 }
 .v-tabs li {
@@ -54,13 +51,13 @@ body {
 }
 
 /* ----------------------------------------
-   Subheading & Main Container
+   Subheading & Instructions
    ---------------------------------------- */
 .subheading-box {
     background-color: #f7fdf7;
     border-left: 4px solid #3c763d;
     padding: 0.75rem 1rem;
-    margin: 1rem 3% 1.5rem 3%;
+    margin: 1rem 0 1.5rem 0;
     border-radius: 4px;
 }
 .subheading-box .title {
@@ -69,22 +66,32 @@ body {
     margin: 0;
     font-weight: 600;
 }
-
-/* Main container for the experiment section */
-.v-datalist-container.components-list {
-    border: 2px solid #8dc63f;
-    border-radius: 8px;
-    padding: 1rem 1rem 10px 1rem;
-    background-color: #fafafa;
-}
-.v-datalist-title {
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid #eee;
+.v-instruction-container .v-content {
+    text-align: left;
+    padding-left: 10%;
+    padding-right: 10%;
 }
 
 /* ----------------------------------------
-   Standardized Content Panel (for charts, observations, etc.)
+   Main Experiment Container
+   ---------------------------------------- */
+.v-datalist-container.components-list {
+    border: 2px solid #8dc63f;
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: #fafafa;
+}
+.v-datalist-title, .v-datalist-subtitle {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+    font-weight: 600;
+    color: #363636;
+}
+
+/* ----------------------------------------
+   Standardized Content Panel
    ---------------------------------------- */
 .white-boxed-panel {
     background-color: #fff;
@@ -152,8 +159,7 @@ body {
     background: #3273dc;
     cursor: pointer;
 }
-
-.buttons.has-addons .button.is-primary {
+.buttons.has-addons .button.is-primary, .button.is-medium {
     background-color: #3273dc;
     color: #ffffff;
     border-color: #3273dc;
@@ -161,25 +167,84 @@ body {
 .buttons.has-addons .button {
     border: 1px solid #ddd;
 }
-.buttons.has-addons .button:hover:not(.is-primary) { 
+.buttons.has-addons .button:hover:not(.is-primary) {
     background-color: #f0f0f0;
     color: #333;
 }
 
 /* ----------------------------------------
-   Chart & Animation Styling
+   Chart, Animation & Observation Styling
    ---------------------------------------- */
-.chart-wrapper { 
+.chart-wrapper {
     position: relative;
     width: 100%;
-    min-height: 250px; /* Minimum height for smaller charts */
+    min-height: 250px; /* Base minimum height */
 }
-#lineChart, #histogramChart, #combinedChart {
+canvas { /* Universal canvas styling */
     width: 100% !important;
     height: 100% !important;
 }
-
-#observations p {
+#observations p, #observations div {
     font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+    line-height: 1.7;
+    margin: 0 auto;
+}
+
+/* Specifics for Exp 2 */
+#animationContainer {
+    position: relative;
+    width: 100%;
+    height: 624px;
+    background-color: #fdfdfd;
+    border-radius: 4px;
+    border: 1px dashed #ccc;
+    overflow: hidden;
+}
+.nucleus-img {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    transition: all 400ms ease-in-out;
+}
+
+/* Specifics for Exp 3 */
+#timelineContainer {
+    position: relative;
+    min-height: 130px;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+}
+
+/* ----------------------------------------
+   Responsiveness
+   ---------------------------------------- */
+@media (max-width: 768px) {
+    .v-instruction-container .v-content {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+    .chart-wrapper {
+        height: 350px;
+    }
+    #animationContainer {
+        height: 350px; /* Match chart height on mobile */
+    }
+}
+@media (max-width: 620px) {
+    .controls-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    .field {
+        width: 100%;
+        max-width: none;
+        margin-bottom: 0.5rem;
+    }
 }
