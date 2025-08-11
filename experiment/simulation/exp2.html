@@ -26,16 +26,37 @@
         <div class="subheading-box">
           <p class="title">Merging and Splitting of a Poisson Process</p>
         </div>
+        <!-- [MODIFIED] Instructions Section -->
         <div class="v-collapsible-instruction-container v-instruction-container">
           <div class="v-collapsible is-size-4">Instructions</div>
           <div class="v-content">
-            <ul style="list-style: disc; margin-left: 20px;">
-              <li>Two independent Poisson emitters operate at rates \(\lambda_1\) and \(\lambda_2\).</li>
-              <li><strong>Merge:</strong> Combines both streams into one with rate \(\lambda_1 + \lambda_2\). The moment of merging is marked on the line chart.</li>
-              <li>Adjust \(\lambda_1\) and \(\lambda_2\) using the sliders. Click “Merge” to see the effect, and "Reset & Split" to revert.</li>
-              <li><strong>Left Panel:</strong> Visualizes emitters merging and splitting.</li>
-              <li><strong>Right Panel:</strong> Two real-time charts: <ol><li>Live line chart: emissions per second.</li><li>Histogram: empirical probability of emission counts vs the theoretical PMF.</li></ol></li>
-              <li><strong>Observations Panel:</strong> Tracks the running average emission rate vs the theoretical rate \(\lambda\).</li>
+            <p>This module demonstrates two key operations on Poisson processes: <strong>superposition (merging)</strong> and <strong>thinning (splitting)</strong>. When two independent Poisson streams are combined, the resulting stream is also a Poisson process. Conversely, a single stream can be split into multiple independent Poisson sub-streams.</p>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
+            <ul style="list-style: disc">
+              <li>To visually and statistically verify that merging two independent Poisson processes with rates \(\lambda_1\) and \(\lambda_2\) results in a new Poisson process with a combined rate of \(\lambda_1 + \lambda_2\).</li>
+              <li>To understand how a single Poisson process can be viewed as the superposition of multiple independent sub-processes.</li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Controls</h4>
+            <ul style="list-style: disc;">
+              <li><strong>Rate \(\lambda_1\) (Emitter 1):</strong> Adjusts the average event rate for the first Poisson process.</li>
+              <li><strong>Rate \(\lambda_2\) (Emitter 2):</strong> Adjusts the average event rate for the second Poisson process.</li>
+              <li><strong>Merge / Reset & Split Button:</strong> Toggles the simulation between two states: the merged state (one combined process) and the split state (two independent processes).</li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
+            <ul style="list-style: disc;">
+              <li><strong>Live Emission Animation:</strong> Provides a real-time visual of particles being emitted from the source(s), showing either two separate emitters or one merged emitter.</li>
+              <li><strong>Real-time Data Plots:</strong>
+                  <ul style="list-style: circle; margin-left: 20px;">
+                      <li>A line chart plots the number of events per second, with a vertical line indicating the moment of merging or splitting.</li>
+                      <li>A histogram compares the distribution of observed event counts against the theoretical Poisson PMF for the current state.</li>
+                  </ul>
+              </li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
+            <ul style="list-style: disc;">
+              <li>When in the <strong>merged state</strong>, the running average rate shown in the "Observations" panel should converge towards the theoretical sum \(\lambda_1 + \lambda_2\).</li>
+              <li>When in the <strong>split state</strong>, the two processes run independently, and their individual behaviors are governed by their respective rates set by the sliders.</li>
+              <li>The histogram of event counts should always closely match the shape of the theoretical Poisson distribution, whether in the merged or split state.</li>
             </ul>
           </div>
         </div>
@@ -87,7 +108,6 @@
                 </div>
               </div>
             </div>
-            <!-- [UNIFIED] Observations panel structure -->
             <div class="white-boxed-panel">
               <h4 class="v-datalist-subtitle">Observations</h4>
               <div id="observations" style="padding: 10px; text-align: center;"></div>
