@@ -6,12 +6,11 @@ const histogramChartCtx = document.getElementById("histogramChart").getContext("
 
 let lineChartInstance, histogramChartInstance;
 let lambda1 = 10, lambda2 = 5;
-let mode = 'splitting'; // 'splitting' or 'merging'
-
+let mode = 'splitting';
+let mergeTime = -1; // Time at which merge occurs
 
 let total1 = 0, total2 = 0, elapsedSeconds = 0;
-let activeParticleCount = 0; // Failsafe counter
-
+let activeParticleCount = 0;
 
 const HISTOGRAM_DATA_POINTS = 100;
 let lineChartData1 = [], lineChartData2 = [], lineChartDataMerged = [], lineChartLabels = [];
@@ -24,23 +23,19 @@ const toggleModeBtn = document.getElementById("toggleModeBtn");
 
 const factorialCache = [1];
 
-
 // --------------------------------------
 // 2. Utility Functions
 // --------------------------------------
-
 function factorial(k) {
     if (k < 0) return Infinity;
     if (factorialCache[k] !== undefined) return factorialCache[k];
     let result = factorialCache[factorialCache.length - 1];
-    for (let i = factorialCache.length; i <= k; i++) {
-        result *= i;
-        factorialCache[i] = result;
-    }
+    for (let i = factorialCache.length; i <= k; i++) result *= i;
     return result;
 }
 
 function poissonPMF(lambda, k) {
+    if (lambda < 0 || k < 0) return 0;
     return Math.exp(-lambda) * Math.pow(lambda, k) / factorial(k);
 }
 
@@ -50,13 +45,11 @@ function samplePoisson(lambda) {
     let p = 1.0, k = 0;
     do { k++; p *= Math.random(); } while (p > L);
     return k - 1;
-
 }
 
 // --------------------------------------
 // 3. Chart Initialization
 // --------------------------------------
-
 function initializeCharts() {
     if (lineChartInstance) lineChartInstance.destroy();
     lineChartInstance = new Chart(lineChartCtx, {
@@ -69,7 +62,25 @@ function initializeCharts() {
                 { label: "Merged (λ₁ + λ₂)", data: [], borderColor: "rgba(50, 205, 50, 0.9)", backgroundColor: "rgba(50, 205, 50, 0.2)", tension: 0.2, fill: true }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: "Time (seconds)" }}, y: { beginAtZero: true, title: { display: true, text: "Count per Second" }}}}
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { x: { title: { display: true, text: "Time (seconds)" }}, y: { beginAtZero: true, title: { display: true, text: "Count per Second" }}},
+            plugins: {
+                legend: {
+                    labels: {
+                        filter: (legendItem) => {
+                            const label = legendItem.text;
+                            if (mode === 'splitting') return !label.includes('Merged');
+                            return label.includes('Merged');
+                        }
+                    }
+                },
+                // --- ADDED: Annotation configuration ---
+                annotation: {
+                    annotations: {} // Will be populated dynamically
+                }
+            }
+        }
     });
 
     if (histogramChartInstance) histogramChartInstance.destroy();
@@ -78,52 +89,70 @@ function initializeCharts() {
         data: {
             labels: [],
             datasets: [
-                { label: 'Empirical (λ₁)', data: [], backgroundColor: "rgba(220, 20, 60, 0.6)", hidden: true },
-                { label: 'Empirical (λ₂)', data: [], backgroundColor: "rgba(30, 144, 255, 0.6)", hidden: true },
-                { label: 'Theoretical (λ₁)', data: [], type: 'line', borderColor: 'rgba(220, 20, 60, 1)', borderWidth: 2, pointRadius: 0, fill: false, hidden: true },
-                { label: 'Theoretical (λ₂)', data: [], type: 'line', borderColor: 'rgba(30, 144, 255, 1)', borderWidth: 2, pointRadius: 0, fill: false, hidden: true },
-                { label: 'Empirical (Merged)', data: [], backgroundColor: 'rgba(50, 205, 50, 0.2)', hidden: true }, // Corrected Color
-                { label: 'Theoretical (Merged)', data: [], type: 'line', borderColor: 'rgba(50, 205, 50, 0.9)', borderWidth: 3, pointRadius: 0, fill: false, hidden: true }
+                { label: 'Empirical (λ₁)', data: [], backgroundColor: "rgba(220, 20, 60, 0.6)" },
+                { label: 'Empirical (λ₂)', data: [], backgroundColor: "rgba(30, 144, 255, 0.6)" },
+                { label: 'Theoretical PMF (λ₁)', data: [], type: 'line', borderColor: 'rgba(220, 20, 60, 1)', borderWidth: 2, pointRadius: 0, fill: false },
+                { label: 'Theoretical PMF (λ₂)', data: [], type: 'line', borderColor: 'rgba(30, 144, 255, 1)', borderWidth: 2, pointRadius: 0, fill: false },
+                { label: 'Empirical (Merged)', data: [], backgroundColor: 'rgba(50, 205, 50, 0.6)' },
+                { label: 'Theoretical PMF (Merged)', data: [], type: 'line', borderColor: 'rgba(50, 205, 50, 1)', borderWidth: 3, pointRadius: 0, fill: false }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: "Number of Emissions" }}, y: { beginAtZero: true, title: { display: true, text: "Frequency or Count" }}}}
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { x: { title: { display: true, text: "Number of Emissions" }}, y: { beginAtZero: true, title: { display: true, text: "Probability" }}},
+            plugins: {
+                legend: {
+                    labels: {
+                        filter: (legendItem) => {
+                            const label = legendItem.text;
+                            if (mode === 'splitting') return !label.includes('Merged');
+                            return label.includes('Merged');
+                        }
+                    }
+                }
+            }
+        }
     });
 }
 
 // --------------------------------------
 // 4. Event Listeners & Mode Control
 // --------------------------------------
-
 lambda1Slider.oninput = () => { lambda1 = parseFloat(lambda1Slider.value); lambda1Val.textContent = lambda1; if(mode === 'splitting') resetSimulation(); };
 lambda2Slider.oninput = () => { lambda2 = parseFloat(lambda2Slider.value); lambda2Val.textContent = lambda2; if(mode === 'splitting') resetSimulation(); };
 
 toggleModeBtn.addEventListener('click', () => {
     if (mode === 'splitting') {
         mode = 'merging';
+        mergeTime = elapsedSeconds; // --- ADDED: Record the merge time ---
         toggleModeBtn.classList.add('is-primary');
         toggleModeBtn.textContent = 'Reset & Split';
         [lambda1Slider, lambda2Slider].forEach(s => s.disabled = true);
+        histData1 = [];
+        histData2 = [];
+        updateHistogramChart();
     } else {
         resetSimulation();
-        return; // Exit to avoid double-update
+        return;
     }
+    lineChartInstance.update();
+    histogramChartInstance.update();
     updateNucleiPositions();
 });
 
 // --------------------------------------
 // 5. Simulation Core
 // --------------------------------------
-
 let intervalID = null;
 
 function resetSimulation() {
     if (intervalID) clearInterval(intervalID);
     
-    const existingParticles = animationContainer.querySelectorAll('img.particle');
-    existingParticles.forEach(p => p.remove());
+    animationContainer.querySelectorAll('.particle').forEach(p => p.remove());
     activeParticleCount = 0;
 
     mode = 'splitting';
+    mergeTime = -1; // --- ADDED: Reset the merge time ---
     toggleModeBtn.classList.remove('is-primary');
     toggleModeBtn.textContent = 'Merge';
     [lambda1Slider, lambda2Slider].forEach(s => s.disabled = false);
@@ -155,13 +184,11 @@ function runTimeStep() {
         const rect = nucMergedImg.getBoundingClientRect();
         for (let i = 0; i < currentMergedCount; i++) scatterParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
-    } else { // Splitting
+    } else {
         const count1 = samplePoisson(lambda1);
         const count2 = samplePoisson(lambda2);
-        total1 += count1;
-        total2 += count2;
-        histData1.push(count1);
-        histData2.push(count2);
+        total1 += count1; total2 += count2;
+        histData1.push(count1); histData2.push(count2);
         if (histData1.length > HISTOGRAM_DATA_POINTS) { histData1.shift(); histData2.shift(); }
 
         lineChartData1.push(count1);
@@ -173,18 +200,39 @@ function runTimeStep() {
         for (let i = 0; i < count2; i++) scatterParticle(rect2.left + rect2.width / 2, rect2.top + rect2.height / 2);
     }
     
-    if (activeParticleCount > 200) {
-        console.warn("High particle count detected (>200). Resetting simulation.");
-        resetSimulation();
-        return;
-    }
-
+    if (activeParticleCount > 200) { resetSimulation(); return; }
     updateAllVisuals();
+}
+
+// --- ADDED: New function to update the annotation ---
+function updateAnnotations() {
+    const annotations = {};
+    if (mergeTime !== -1) {
+        annotations.mergeLine = {
+            type: 'line',
+            scaleID: 'x',
+            value: `Sec ${mergeTime}`,
+            borderColor: 'rgba(220, 20, 60, 0.8)',
+            borderWidth: 2,
+            borderDash: [6, 6],
+            label: {
+                content: 'Merge Point',
+                enabled: true,
+                position: 'start',
+                backgroundColor: 'rgba(220, 20, 60, 0.7)',
+                color: 'white',
+                font: { style: 'bold' }
+            }
+        };
+    }
+    lineChartInstance.options.plugins.annotation.annotations = annotations;
 }
 
 function updateAllVisuals() {
     [lineChartData1, lineChartData2, lineChartDataMerged].forEach((data, i) => lineChartInstance.data.datasets[i].data = data);
     lineChartInstance.data.labels = lineChartLabels;
+    
+    updateAnnotations(); // Update the annotation before drawing the chart
     lineChartInstance.update();
 
     updateHistogramChart();
@@ -195,41 +243,48 @@ function updateAllVisuals() {
 // 6. Specific Update Functions
 // --------------------------------------
 function updateHistogramChart() {
-    const isSplitting = mode === 'splitting';
-
-    histogramChartInstance.data.datasets.forEach((dataset, i) => {
-        const isSplitDataset = i < 4;
-        const isMergeDataset = i >= 4;
-        dataset.hidden = isSplitting ? !isSplitDataset : !isMergeDataset;
-    });
-
     let maxCount = 0;
-    if (isSplitting) {
+    if (mode === 'splitting') {
+        if (histData1.length < 1) {
+            histogramChartInstance.data.labels = [];
+            histogramChartInstance.data.datasets.forEach(ds => ds.data = []);
+            histogramChartInstance.update(); return;
+        }
         const freq1 = new Map(), freq2 = new Map();
         histData1.forEach(c => { freq1.set(c, (freq1.get(c) || 0) + 1); maxCount = Math.max(maxCount, c); });
         histData2.forEach(c => { freq2.set(c, (freq2.get(c) || 0) + 1); maxCount = Math.max(maxCount, c); });
         
         const labels = Array.from({ length: maxCount + 1 }, (_, i) => i);
-        const totalPoints = histData1.length || 1;
+        const totalPoints = histData1.length;
         
         histogramChartInstance.data.labels = labels;
-        histogramChartInstance.data.datasets[0].data = labels.map(i => freq1.get(i) || 0);
-        histogramChartInstance.data.datasets[1].data = labels.map(i => freq2.get(i) || 0);
-        histogramChartInstance.data.datasets[2].data = labels.map(k => poissonPMF(lambda1, k) * totalPoints);
-        histogramChartInstance.data.datasets[3].data = labels.map(k => poissonPMF(lambda2, k) * totalPoints);
+        histogramChartInstance.data.datasets[0].data = labels.map(i => (freq1.get(i) || 0) / totalPoints);
+        histogramChartInstance.data.datasets[1].data = labels.map(i => (freq2.get(i) || 0) / totalPoints);
+        histogramChartInstance.data.datasets[2].data = labels.map(k => poissonPMF(lambda1, k));
+        histogramChartInstance.data.datasets[3].data = labels.map(k => poissonPMF(lambda2, k));
+        histogramChartInstance.data.datasets[4].data = [];
+        histogramChartInstance.data.datasets[5].data = [];
     } else {
+        if (histDataMerged.length < 1) {
+            histogramChartInstance.data.labels = [];
+            histogramChartInstance.data.datasets.forEach(ds => ds.data = []);
+            histogramChartInstance.update(); return;
+        }
         const freqM = new Map();
         histDataMerged.forEach(c => { freqM.set(c, (freqM.get(c) || 0) + 1); maxCount = Math.max(maxCount, c); });
 
         const labels = Array.from({ length: maxCount + 1 }, (_, i) => i);
-        const totalPoints = histDataMerged.length || 1;
+        const totalPoints = histDataMerged.length;
 
         histogramChartInstance.data.labels = labels;
-        histogramChartInstance.data.datasets[4].data = labels.map(i => freqM.get(i) || 0);
-        histogramChartInstance.data.datasets[5].data = labels.map(k => poissonPMF(lambda1 + lambda2, k) * totalPoints);
+        histogramChartInstance.data.datasets[4].data = labels.map(i => (freqM.get(i) || 0) / totalPoints);
+        histogramChartInstance.data.datasets[5].data = labels.map(k => poissonPMF(lambda1 + lambda2, k));
+        histogramChartInstance.data.datasets[0].data = [];
+        histogramChartInstance.data.datasets[1].data = [];
+        histogramChartInstance.data.datasets[2].data = [];
+        histogramChartInstance.data.datasets[3].data = [];
     }
     histogramChartInstance.update();
-
 }
 
 function updateObservations() {
@@ -256,16 +311,10 @@ function updateObservations() {
 // --------------------------------------
 // 7. Animation & Positioning
 // --------------------------------------
-
 function updateNucleiPositions(isInitial = false) {
     const panelWidth = animationContainer.offsetWidth, panelHeight = animationContainer.offsetHeight;
-    
-    // Set a larger size for the nuclei images
     const nucleiSize = '100px'; 
-    [nuc1Img, nuc2Img, nucMergedImg].forEach(img => {
-        img.style.width = nucleiSize;
-        img.style.height = nucleiSize;
-    });
+    [nuc1Img, nuc2Img, nucMergedImg].forEach(img => { img.style.width = nucleiSize; img.style.height = nucleiSize; });
 
     const centerX = panelWidth / 2;
     const mergedY = panelHeight / 2;
@@ -276,15 +325,10 @@ function updateNucleiPositions(isInitial = false) {
     [nuc1Img, nuc2Img, nucMergedImg].forEach(img => img.style.transition = `all ${duration}ms ease-in-out`);
 
     if (mode === 'merging') {
-        [nuc1Img, nuc2Img].forEach(nuc => {
-            nuc.style.left = centerX + "px";
-            nuc.style.top = mergedY + "px";
-            nuc.style.opacity = '0';
-        });
-        nucMergedImg.style.left = centerX + "px";
-        nucMergedImg.style.top = mergedY + "px";
+        [nuc1Img, nuc2Img].forEach(nuc => { nuc.style.left = centerX + "px"; nuc.style.top = mergedY + "px"; nuc.style.opacity = '0'; });
+        nucMergedImg.style.left = centerX + "px"; nucMergedImg.style.top = mergedY + "px";
         setTimeout(() => { nucMergedImg.style.opacity = '1'; }, duration);
-    } else { // Splitting
+    } else {
         nucMergedImg.style.opacity = '0';
         nuc1Img.style.left = centerX + "px"; nuc1Img.style.top = split1Y + "px"; nuc1Img.style.opacity = '1';
         nuc2Img.style.left = centerX + "px"; nuc2Img.style.top = split2Y + "px"; nuc2Img.style.opacity = '1';
@@ -297,7 +341,6 @@ function scatterParticle(x, y) {
     const particle = document.createElement('img');
     particle.src = "./images/particle.png";
     particle.className = 'particle'; 
-    // Increased particle size
     particle.style.cssText = `position:absolute; width:16px; height:16px; transform:translate(-50%,-50%); z-index:10; left:${x - containerRect.left}px; top:${y - containerRect.top}px; pointer-events:none;`;
     animationContainer.appendChild(particle);
 
@@ -306,11 +349,7 @@ function scatterParticle(x, y) {
     
     function animate() {
         const elapsed = performance.now() - startTime;
-        if (elapsed > lifetime) {
-            particle.remove();
-            activeParticleCount--;
-            return;
-        }
+        if (elapsed > lifetime) { particle.remove(); activeParticleCount--; return; }
         const newX = parseFloat(particle.style.left) + speed * Math.cos(angle) / 60;
         const newY = parseFloat(particle.style.top) + speed * Math.sin(angle) / 60;
         particle.style.left = `${newX}px`;
@@ -325,7 +364,6 @@ function scatterParticle(x, y) {
 // 8. Initial Load
 // --------------------------------------
 window.addEventListener("load", () => {
-
     lambda1Slider.value = lambda1;
     lambda2Slider.value = lambda2;
     lambda1Val.textContent = lambda1;

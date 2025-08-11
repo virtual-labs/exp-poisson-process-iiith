@@ -2,170 +2,103 @@
 <html lang="en">
 <script>
   window.MathJax = {
-    tex: {
-      inlineMath: [['\\(', '\\)']],
-      displayMath: [['\\[', '\\]']]
-    },
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
     svg: { fontCache: 'global' }
   };
 </script>
-
 <head>
-  <meta name="description" content="Author: Harsh Kapoor,
-    Purpose: Education and Learning,
-    Content Level: College,
-    A interactive experiment of probability and poisson process in specific.">
-
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
-  <link rel="stylesheet" href="./css/css1.css" />
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <link rel="stylesheet" href="./css/style.css" />
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-
   <title>Emergence of Poisson Process</title>
-
+  <style>
+    .error-message { color: #dc3545; font-size: 0.9rem; font-weight: bold; display: block; text-align: center; margin-top: 5px; height: 1.2rem; }
+  </style>
 </head>
-
 <body>
-  <!-- === Tasks Header === -->
-  <div class="tasks-heading">Tasks</div>
-
-  <!-- === Unified Navigation Bar === -->
-  <div class="v-tabs">
-    <ul>
-      <li class="active"><a href="exp1.html">Sub Experiment - 1</a></li>
-      <li><a href="exp2.html">Sub Experiment - 2</a></li>
-      <li><a href="exp3.html">Sub Experiment - 3</a></li>
-    </ul>
-  </div>
-
-  <!-- === Subheading Box === -->
-  <div class="subheading-box">
-    <p class="title">Emergence of Poisson Process from Bernoulli Process</p>
-  </div>
-
-  <!-- === Instructions Panel === -->
-  <div class="columns is-centered">
-
-  <div class="column is-11-desktop is-12-tablet is-12-mobile">
-    <div class="v-collapsible-instruction-container v-instruction-container">
-      <div class="v-collapsible is-size-5">Instructions</div>
-      <div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%">
-        
-        <p>
-          This interactive module demonstrates the convergence of the <strong>Binomial distribution</strong>
-          to the <strong>Poisson distribution</strong> when the probability of success <em>p</em> is set as <em>λ / n</em>.
-          As <em>n</em> increases, the Binomial distribution approximates the Poisson distribution more closely.
-        </p>
-
-        <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
-        <ul style="list-style: disc">
-          <li>
-            Visualize and quantify how a Binomial distribution with parameters <em>n</em> and <em>p = λ / n</em>
-            converges to a Poisson distribution with mean <em>λ</em> as <em>n</em> increases.
-          </li>
-        </ul>
-
-        <h4 style="font-weight: 600; font-size: 1.15em;">Controls</h4>
-        <ul style="list-style: disc;">
-          <li>Number of trials (<em>n</em>): Adjustable via the slider (between 100 and 1000)</li>
-          <li>Poisson mean (<em>λ</em>): Adjustable via the number field (between 0 and 100).</li>
-          <li><em>Note:</em> The value of <em>p</em> is computed internally as <em>λ / n</em>.</li>
-        </ul>
-
-        <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
-        <ul style="list-style: disc;">
-          <li>Binomial PMF — shown in <span style="color: #f08080;">red</span>.</li>
-          <li>Poisson PMF — shown in <span style="color: #87cefa;">blue</span>.</li>
-          <li>Average Absolute Error — displayed below the plot.</li>
-        </ul>
-
-        <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
-        <ul style="list-style: disc;">
-          <li>As <em>n</em> increases for a fixed <em>λ</em>, the Binomial distribution approaches the Poisson distribution.</li>
-          <li>The average absolute error quantifies the similarity and decreases with larger <em>n</em>.</li>
-        </ul>
-
-      </div>
-
-
-      </div>
-    </div>
-  </div>
-
-  <br />
-
-  <!-- === Experiment Section === -->
-  <section id="page1">
+  <div class="container">
+    <div class="tasks-heading">Tasks</div>
     <div class="columns is-centered">
       <div class="column is-11-desktop is-12-tablet is-12-mobile">
-        <div class="v-datalist-container components-list">
-
-          <h3 class="v-datalist-title" style="text-align: center;">
-            Binomial ↔ Poisson Emergence
-          </h3>
-
-          <!-- === Sliders === -->
-          <div class="control-panel" style="margin-top: 20px;">
-            <div class="controls-container">
-              <div class="field">
-                <label for="sliderN" class="label">Choose \(n\) (number of trials)</label>
-                <input
-                  type="range"
-                  id="sliderN"
-                  min="100"
-                  max="1000"
-                  step="10"
-                  value="150"
-                  class="slider"
-                />
-                <span id="displayN" class="value-display">150</span>
-              </div>
-              
-               <div class="field">
-                <label for="inputLambda" class="label">Choose \(\lambda\)</label>
-                  <input
-                    type="number"
-                    id="inputLambda"
-                    min="0"
-                    max="100"
-                    step="1"
-                    value="10"
-                    class="input"
-                  />
+        
+        <div class="v-tabs">
+          <ul>
+            <li class="active"><a href="exp1.html">Sub Experiment - 1</a></li>
+            <li><a href="exp2.html">Sub Experiment - 2</a></li>
+            <li><a href="exp3.html">Sub Experiment - 3</a></li>
+          </ul>
+        </div>
+        <div class="subheading-box">
+          <p class="title">Emergence of Poisson Process from Bernoulli Process</p>
+        </div>
+        <div class="v-collapsible-instruction-container v-instruction-container">
+          <div class="v-collapsible is-size-4">Instructions</div>
+          <div class="v-content">
+            <p>This interactive module demonstrates the convergence of the <strong>Binomial distribution</strong> to the <strong>Poisson distribution</strong> when the probability of success <em>p</em> is set as <em>λ / n</em>. As <em>n</em> increases, the Binomial distribution approximates the Poisson distribution more closely.</p>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
+            <ul style="list-style: disc">
+              <li>Visualize and quantify how a Binomial distribution with parameters <em>n</em> and <em>p = λ / n</em> converges to a Poisson distribution with mean <em>λ</em> as <em>n</em> increases.</li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Controls</h4>
+            <ul style="list-style: disc;">
+              <li>Number of trials (<em>n</em>): Adjustable via the slider (between 10 and 1000)</li>
+              <li>Poisson mean (<em>λ</em>): Adjustable via the number field (between 0 and 50).</li>
+              <li><em>Note:</em> The value of λ cannot be greater than n.</li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
+            <ul style="list-style: disc;">
+              <li>Binomial PMF — shown in <span style="color: #f08080;">red</span>.</li>
+              <li>Poisson PMF — shown in <span style="color: #87cefa;">blue</span>.</li>
+              <li>Average & Maximum Absolute Error — displayed below the plot.</li>
+            </ul>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
+            <ul style="list-style: disc;">
+              <li>As <em>n</em> increases for a fixed <em>λ</em>, the Binomial distribution approaches the Poisson distribution.</li>
+              <li>The average and maximum absolute errors quantify the similarity and decrease with larger <em>n</em>.</li>
+            </ul>
+          </div>
+        </div>
+        <br />
+        <section id="page1">
+          <div class="v-datalist-container components-list">
+            <h3 class="v-datalist-title">Binomial ↔ Poisson Emergence</h3>
+            <div class="white-boxed-panel">
+              <div class="controls-container">
+                <div class="field">
+                  <label for="sliderN" class="label">Choose \(n\) (number of trials)</label>
+                  <input type="range" id="sliderN" min="10" max="1000" step="10" value="50" class="slider" />
+                  <span id="displayN" class="value-display">50</span>
+                </div>
+                <div class="field">
+                  <label for="inputLambda" class="label">Choose \(\lambda\)</label>
+                  <input type="number" id="inputLambda" min="0" max="50" step="1" value="10" class="input" />
+                  <span id="lambdaError" class="error-message"></span>
                 </div>
               </div>
-          </div>
-
-          <!-- === Chart Panel (Styled) === -->
-          <div class="white-boxed-panel" style="margin: 2px 0.5% 0 0.5%;">
-             <h4 class="v-datalist-subtitle" style="text-align:center; margin-bottom: 1rem; font-weight: 600;">Distribution Comparison</h4>
+            </div>
+            <div class="white-boxed-panel">
+              <h4 class="v-datalist-subtitle">Distribution Comparison</h4>
               <div class="chart-wrapper" style="height: 500px;">
                 <canvas id="combinedChart"></canvas>
               </div>
-          </div>
-
-
-          <!-- === Error Display === -->
-          <div id="avgError" style="text-align: center; margin: 20px 0; font-weight: bold; font-size: 1.1rem;"></div>
-
-          <!-- === Observations Panel (Styled) === -->
-          <div class="white-boxed-panel" style="margin: 0 1.5% 1.5rem 1.5%;">
-            <div class="v-datalist-title">Observations</div>
-            <div id="observations"
-              style="margin-left: 3%; margin-right: 3%; margin-top: 2%; margin-bottom: 2%; padding: 2px 5px 10px 10px;">
-              <!-- JS will inject content here -->
+              <div id="avgError" style="text-align: center; margin: 20px 0; font-weight: bold; font-size: 1.1rem;"></div>
+            </div>
+            <!-- [UNIFIED] Observations panel structure -->
+            <div class="white-boxed-panel">
+              <h4 class="v-datalist-subtitle">Observations</h4>
+              <div id="observations" style="padding: 10px; text-align: center;">
+                <!-- JS will inject content here -->
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
-  </section>
-
-  <!-- Scripts -->
+  </div>
   <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
   <script src="./js/poisson.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

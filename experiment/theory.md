@@ -8,9 +8,9 @@ The Poisson distribution arises naturally as a limit of the Binomial distributio
 
 Let $X_n \sim \text{Bin}(n, p)$ denote a Binomial random variable, where:
 
-* $n$ is the number of independent Bernoulli trials.
-* $p$ is the probability of success.
-* $\lambda = np$ is the expected number of successes.
+*   $n$ is the number of independent Bernoulli trials.
+*   $p$ is the probability of success.
+*   $\lambda = np$ is the expected number of successes.
 
 We are interested in the behavior of $X_n$ as $n \to \infty$, $p \to 0$, such that $\lambda = np$ is held constant.
 
@@ -33,9 +33,9 @@ $$
 
 Using the limits:
 
-* $\frac{n(n-1)\dots(n-k+1)}{n^k} \to 1$,
-* $\left(1 - \frac{\lambda}{n}\right)^n \to e^{-\lambda}$,
-* $\left(1 - \frac{\lambda}{n}\right)^{-k} \to 1$,
+*   $\frac{n(n-1)\dots(n-k+1)}{n^k} \to 1$,
+*   $\left(1 - \frac{\lambda}{n}\right)^n \to e^{-\lambda}$,
+*   $\left(1 - \frac{\lambda}{n}\right)^{-k} \to 1$,
 
 the expression converges to:
 
@@ -112,32 +112,33 @@ $$
 
 This proves $N_1(t) \sim \text{Poisson}(p \lambda t)$. Independence follows by construction.
 
-Here please note that in experiments that follow, we will be modifying only \lambda_1 + \lambda_2
-
 ---
 
-## Interarrival Times in Poisson Process
+## Experiment 3: Inter-arrival Times in a Poisson Process
 
 Let $T_1, T_2, \dots$ be arrival times in a homogeneous Poisson process with rate $\lambda$.
-Define interarrival times $S_n = T_n - T_{n - 1}$ (with $T_0 = 0$).
+Define inter-arrival times $S_n = T_n - T_{n - 1}$ (with $T_0 = 0$).
 
-### Theorem: Exponential Interarrival Times
+### Theorem: Exponential Inter-arrival Times
 
-Each $S_n \sim \text{Exp}(\lambda)$, and the $S_n$ are i.i.d.
+Each $S_n \sim \text{Exp}(\lambda)$, and the $S_n$ are i.i.d. (independent and identically distributed).
 
 **Proof:**
-The probability that no event occurs in $[0, t]$ is:
+The probability that no event occurs in the interval $[0, t]$ is:
 
 $$
 \mathbb{P}(S_1 > t) = \mathbb{P}(N(t) = 0) = e^{-\lambda t}
 $$
 
-So the CDF of $S_1$ is:
+So the Cumulative Distribution Function (CDF) of $S_1$ is:
 
 $$
-F_{S_1}(t) = 1 - e^{-\lambda t} \Rightarrow f_{S_1}(t) = \lambda e^{-\lambda t}, \quad t \ge 0
+F_{S_1}(t) = \mathbb{P}(S_1 \le t) = 1 - \mathbb{P}(S_1 > t) = 1 - e^{-\lambda t}
 $$
 
-By the strong Markov property, the process after the first arrival is again a Poisson process (memoryless). Hence, $S_2, S_3, \dots \sim \text{Exp}(\lambda)$ i.i.d.
+The Probability Density Function (PDF) is the derivative of the CDF:
+$$
+f_{S_1}(t) = \frac{d}{dt}(1 - e^{-\lambda t}) = \lambda e^{-\lambda t}, \quad t \ge 0
+$$
 
----
+By the memoryless property of the Poisson process, the process effectively "restarts" after each arrival. This means the time until the next arrival ($S_2$) is independent of the previous waiting time and follows the same distribution. Hence, $S_2, S_3, \dots \sim \text{Exp}(\lambda)$ i.i.d.
