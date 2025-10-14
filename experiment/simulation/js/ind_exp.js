@@ -1,44 +1,191 @@
 // --------------------------------------
 // 1. References & Global Variables
 // --------------------------------------
-const timelineCanvas = document.getElementById("timelineCanvas");
-const timelineCtx = timelineCanvas.getContext("2d");
 const histogramChartCtx = document.getElementById("histogramChart").getContext("2d");
 const scatterChartCtx = document.getElementById("scatterChart").getContext("2d");
 
 let histogramChart, scatterChart;
-let lambda = 2.0;
-
-// Simulation state
-let simulationIsRunning = false;
-let totalElapsedTime = 0, arrivalCount = 0;
-let lastArrivalTime = 0, nextEventTime = 0; // Use absolute event times
-let interArrivalTimes = [];
-let arrivalTimestamps = []; // Store absolute timestamps of arrivals
 
 // DOM Elements
-const lambdaSlider = document.getElementById("lambda"), lambdaVal = document.getElementById("lambdaVal");
-const startBtn = document.getElementById("startBtn"), stopBtn = document.getElementById("stopBtn"), resetBtn = document.getElementById("resetBtn");
+const lambdaSlider = document.getElementById("lambda");
+const lambdaVal = document.getElementById("lambdaVal");
+const indexSelect = document.getElementById("interArrivalTimeIndex");
+const trialsSlider = document.getElementById("numTrials");
+const trialsVal = document.getElementById("numTrialsVal");
+const runBtn = document.getElementById("runBtn");
+const resetBtn = document.getElementById("resetBtn");
 const observationsDiv = document.getElementById("observations");
 
-const ANIMATION_TICK_MS = 20;
+// --------------------------------------
+// 2. Chart Initialization
+// --------------------------------------
+function initializeCharts() {
+    if (histogramChart) histogramChart.destroy();
+    histogramChart = new Chart(histogramChartCtx, {
+        type: 'bar',
+        data: { labels: [], datasets: [ { label: 'Empirical Distribution', data: [], backgroundColor: 'rgba(30, 144, 255, 0.6)' }, { label: 'Theoretical Exponential PDF', data: [], type: 'line', borderColor: 'rgba(255, 159, 64, 1)', borderWidth: 3, pointRadius: 0 } ] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: "Inter-arrival Time (T)" }}, y: { title: { display: true, text: "Frequency" }} } }
+    });
+
+    if (scatterChart) scatterChart.destroy();
+    scatterChart = new Chart(scatterChartCtx, {
+        type: 'scatter',
+        data: { datasets: [ { label: 'T_i vs T_{i+1}', data: [], backgroundColor: 'rgba(220, 20, 60, 0.7)' }, { label: 'Best-fit Line', data: [], type: 'line', borderColor: 'rgba(0, 0, 0, 0.8)', borderWidth: 2, pointRadius: 0 } ] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'T_i' } }, y: { title: { display: true, text: 'T_{i+1}' } } } }
+    });
+}
 
 // --------------------------------------
-// 2. Utility Functions
+// 3. Event Listeners
+// --------------------------------------
+lambdaSlider.oninput = () => { lambdaVal.textContent = parseFloat(lambdaSlider.value).toFixed(1); };
+trialsSlider.oninput = () => { trialsVal.textContent = trialsSlider.value; };
+runBtn.addEventListener('click', runSimulation);
+resetBtn.addEventListener('click', resetSimulation);
+
+// --------------------------------------
+// 4. Simulation Core
+// --------------------------------------
+function runSimulation() {
+    // Disable controls during simulation
+    runBtn.disabled = true;
+    resetBtn.disabled = true;
+
+    // Get parameters from UI
+    const lambda = parseFloat(lambdaSlider.value);
+    const numTrials = parseInt(trialsSlider.value);
+    const selectedIndex = parseInt(indexSelect.value); // The 'i' in T_i
+
+    // Data arrays
+    const targetInterArrivalTimes = [];
+    const nextInterArrivalTimes = [];
+
+    // Main simulation loop
+    for (let i = 0; i < numTrials; i++) {
+        // We need to generate `selectedIndex + 1` inter-arrival times to get T_i and T_{i+1}
+        let targetTime, nextTime;
+        for (let j = 1; j <= selectedIndex + 1; j++) {
+            if (j === selectedIndex) {
+                targetTime = exponentialRandom(lambda);
+            } else if (j === selectedIndex + 1) {
+                nextTime = exponentialRandom(lambda);
+            } else {
+                exponentialRandom(lambda); // Generate and discard previous times
+            }
+        }
+        targetInterArrivalTimes.push(targetTime);
+        nextInterArrivalTimes.push(nextTime);
+    }
+    
+    // Update visuals with the collected data
+    updateHistogramChart(targetInterArrivalTimes, lambda);
+    updateScatterChart(targetInterArrivalTimes, nextInterArrivalTimes);
+    updateObservations(targetInterArrivalTimes, nextInterArrivalTimes, lambda);
+    
+    // Re-enable controls
+    runBtn.disabled = false;
+    resetBtn.disabled = false;
+}
+
+function resetSimulation() {
+    // Clear data in charts
+    histogramChart.data.labels = [];
+    histogramChart.data.datasets.forEach(ds => ds.data = []);
+    histogramChart.update();
+
+    scatterChart.data.datasets.forEach(ds => ds.data = []);
+    scatterChart.update();
+    
+    observationsDiv.innerHTML = `<p>Adjust the settings and click "Run Simulation" to see the results.</p>`;
+}
+
+// --------------------------------------
+// 5. Update & Drawing Functions
+// --------------------------------------
+function updateHistogramChart(data, lambda) {
+    if (data.length === 0) return;
+
+    const maxTime = Math.max(...data);
+    const numBins = Math.min(Math.ceil(Math.sqrt(data.length)), 50);
+    const binWidth = maxTime / numBins;
+    if (binWidth <= 0) return;
+
+    const bins = new Array(numBins).fill(0);
+    data.forEach(t => {
+        const binIndex = Math.min(Math.floor(t / binWidth), numBins - 1);
+        bins[binIndex]++;
+    });
+    
+    const labels = bins.map((_, i) => ((i + 0.5) * binWidth).toFixed(2));
+    const theoreticalData = labels.map(label => {
+        return exponentialPDF(parseFloat(label), lambda) * data.length * binWidth;
+    });
+
+    histogramChart.data.labels = labels;
+    histogramChart.data.datasets[0].data = bins;
+    histogramChart.data.datasets[1].data = theoreticalData;
+    histogramChart.update();
+}
+
+function updateScatterChart(dataT_i, dataT_i_plus_1) {
+    if (dataT_i.length === 0) return;
+
+    const points = dataT_i.map((val, index) => ({ x: val, y: dataT_i_plus_1[index] }));
+    scatterChart.data.datasets[0].data = points;
+
+    const { slope, intercept } = calculateLinearRegression(points);
+    const minX = Math.min(...dataT_i);
+    const maxX = Math.max(...dataT_i);
+
+    scatterChart.data.datasets[1].data = [
+        { x: minX, y: slope * minX + intercept },
+        { x: maxX, y: slope * maxX + intercept }
+    ];
+
+    const axisMax = Math.max(maxX, Math.max(...dataT_i_plus_1));
+    scatterChart.options.scales.x.max = axisMax * 1.1;
+    scatterChart.options.scales.y.max = axisMax * 1.1;
+    
+    scatterChart.update();
+}
+
+function updateObservations(data, nextData, lambda) {
+    const sampleMean = data.reduce((a, b) => a + b, 0) / data.length;
+    const theoreticalMean = 1 / lambda;
+    
+    const points = data.map((val, index) => ({ x: val, y: nextData[index] }));
+    const { slope } = calculateLinearRegression(points);
+
+    observationsDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-evenly; flex-wrap: wrap;">
+            <div style="margin: 0.5rem 1rem;">
+                <h5 class="is-size-5 has-text-weight-semibold">Distribution Analysis</h5>
+                <p><strong>Trials Run:</strong> ${data.length}</p>
+                <p><strong>Theoretical Mean (1/λ):</strong> ${theoreticalMean.toFixed(4)} s</p>
+                <p><strong>Sample Mean:</strong> ${sampleMean.toFixed(4)} s</p>
+            </div>
+            <div style="margin: 0.5rem 1rem;">
+                <h5 class="is-size-5 has-text-weight-semibold">Independence Analysis</h5>
+                <p><strong>Data Pairs Plotted:</strong> ${points.length}</p>
+                <p><strong>Best-fit Line Slope:</strong> ${slope.toFixed(5)}</p>
+                <p>(A slope near 0 indicates independence)</p>
+            </div>
+        </div>`;
+}
+
+// --------------------------------------
+// 6. Utility Functions
 // --------------------------------------
 function exponentialRandom(rate) {
-    if (rate <= 0) return Infinity;
     return -Math.log(1.0 - Math.random()) / rate;
 }
 
 function exponentialPDF(x, rate) {
-    if (x < 0) return 0;
     return rate * Math.exp(-rate * x);
 }
 
 function calculateLinearRegression(points) {
-    if (points.length < 2) return { slope: 0 };
-
+    if (points.length < 2) return { slope: 0, intercept: 0 };
     let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     const n = points.length;
 
@@ -49,256 +196,9 @@ function calculateLinearRegression(points) {
         sumX2 += p.x * p.x;
     }
 
-    const numerator = n * sumXY - sumX * sumY;
-    const denominator = n * sumX2 - sumX * sumX;
-    const slope = denominator === 0 ? 0 : numerator / denominator;
-    
-    return { slope };
-}
-
-// --------------------------------------
-// 3. Chart & Canvas Initialization
-// --------------------------------------
-function initializeCharts() {
-    if (histogramChart) histogramChart.destroy();
-    histogramChart = new Chart(histogramChartCtx, {
-        type: 'bar',
-        data: { labels: [], datasets: [ { label: 'Empirical Distribution', data: [], backgroundColor: 'rgba(30, 144, 255, 0.6)' }, { label: 'Theoretical Exponential PDF', data: [], type: 'line', borderColor: 'rgba(255, 159, 64, 1)', borderWidth: 3, pointRadius: 0, fill: false } ] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: "Inter-arrival Time (T)" }}, y: { title: { display: true, text: "Frequency (Count)" }, beginAtZero: true }}}
-    });
-
-    if (scatterChart) scatterChart.destroy();
-    scatterChart = new Chart(scatterChartCtx, {
-        type: 'scatter',
-        data: { datasets: [ { label: 'T_i vs T_{i+1}', data: [], backgroundColor: 'rgba(220, 20, 60, 0.7)' }, { label: 'Best-fit Line', data: [], type: 'line', borderColor: 'rgba(0, 0, 0, 0.8)', borderWidth: 2, pointRadius: 0, fill: false } ] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', position: 'bottom', title: { display: true, text: 'T_i' }, min: 0 }, y: { title: { display: true, text: 'T_{i+1}' }, min: 0 } } }
-    });
-}
-
-function resizeCanvas() {
-    const container = document.getElementById('timelineContainer');
-    timelineCanvas.width = container.offsetWidth;
-    timelineCanvas.height = 110; // Match CSS
-    drawTimeline();
-}
-
-// --------------------------------------
-// 4. Event Listeners
-// --------------------------------------
-lambdaSlider.oninput = () => {
-    lambda = parseFloat(lambdaSlider.value);
-    lambdaVal.textContent = lambda.toFixed(1);
-    if (!simulationIsRunning) updateAllVisuals();
-};
-
-startBtn.addEventListener('click', () => {
-    if (simulationIsRunning) return;
-    simulationIsRunning = true;
-    startBtn.disabled = true; stopBtn.disabled = false; lambdaSlider.disabled = true;
-    if (arrivalCount === 0) { // First start or after reset
-        nextEventTime = totalElapsedTime + exponentialRandom(lambda);
-    }
-    requestAnimationFrame(runTimeStep);
-});
-
-stopBtn.addEventListener('click', () => {
-    simulationIsRunning = false;
-    startBtn.disabled = false; stopBtn.disabled = true; lambdaSlider.disabled = false;
-});
-
-resetBtn.addEventListener('click', () => {
-    simulationIsRunning = false;
-    startBtn.disabled = false; stopBtn.disabled = true; lambdaSlider.disabled = false;
-    totalElapsedTime = 0; arrivalCount = 0; lastArrivalTime = 0; nextEventTime = 0;
-    interArrivalTimes = []; arrivalTimestamps = [];
-    updateAllVisuals();
-});
-
-// --------------------------------------
-// 5. Simulation Core (Robust Logic)
-// --------------------------------------
-let animationFrameId;
-
-function runTimeStep() {
-    if (!simulationIsRunning) {
-        cancelAnimationFrame(animationFrameId);
-        return;
-    }
-    
-    const timeIncrement = ANIMATION_TICK_MS / 1000;
-    totalElapsedTime += timeIncrement;
-
-    if (totalElapsedTime >= nextEventTime) {
-        const interArrivalTime = nextEventTime - lastArrivalTime;
-        interArrivalTimes.push(interArrivalTime);
-        arrivalTimestamps.push(nextEventTime);
-        
-        lastArrivalTime = nextEventTime;
-        arrivalCount++;
-        
-        nextEventTime = lastArrivalTime + exponentialRandom(lambda);
-        
-        updateAllVisuals();
-    } else {
-        drawTimeline();
-    }
-    
-    animationFrameId = requestAnimationFrame(runTimeStep);
-}
-
-// --------------------------------------
-// 6. Update & Drawing Functions
-// --------------------------------------
-function updateAllVisuals() {
-    drawTimeline();
-    updateHistogramChart();
-    updateScatterChart();
-    updateObservations();
-}
-
-/**
- * [UPDATED] Draws a visually enhanced, advancing timeline with smooth panning.
- */
-function drawTimeline() {
-    const w = timelineCanvas.width, h = timelineCanvas.height;
-    timelineCtx.clearRect(0, 0, w, h);
-
-    const timeWindow = 30;
-    const canvasWidth = w - 20;
-
-    const panTriggerPoint = timeWindow / 2;
-    const viewStartTime = totalElapsedTime > panTriggerPoint 
-        ? totalElapsedTime - panTriggerPoint 
-        : 0;
-    const viewEndTime = viewStartTime + timeWindow;
-
-    timelineCtx.strokeStyle = '#555';
-    timelineCtx.lineWidth = 3;
-    timelineCtx.beginPath();
-    timelineCtx.moveTo(10, h / 2);
-    timelineCtx.lineTo(w - 10, h / 2);
-    timelineCtx.stroke();
-
-    timelineCtx.fillStyle = '#444';
-    timelineCtx.font = 'bold 13px Arial';
-    timelineCtx.textAlign = 'center';
-    
-    const tickInterval = 5;
-    const firstTick = Math.ceil(viewStartTime / tickInterval) * tickInterval;
-
-    for (let t = firstTick; t <= viewEndTime; t += tickInterval) {
-        const x = 10 + ((t - viewStartTime) / timeWindow) * canvasWidth;
-        if (x < 10 || x > w - 10) continue;
-        timelineCtx.beginPath();
-        timelineCtx.moveTo(x, h / 2 - 8);
-        timelineCtx.lineTo(x, h / 2 + 8);
-        timelineCtx.stroke();
-        timelineCtx.fillText(`${t.toFixed(0)}s`, x, h / 2 + 25);
-    }
-    
-    for (const arrivalTime of arrivalTimestamps) {
-        if (arrivalTime >= viewStartTime && arrivalTime <= viewEndTime) {
-            const x = 10 + ((arrivalTime - viewStartTime) / timeWindow) * canvasWidth;
-            timelineCtx.fillStyle = 'rgba(220, 20, 60, 0.9)';
-            timelineCtx.beginPath();
-            timelineCtx.arc(x, h / 2, 6, 0, 2 * Math.PI);
-            timelineCtx.fill();
-        }
-    }
-    
-    if (totalElapsedTime >= viewStartTime && totalElapsedTime <= viewEndTime) {
-        const x = 10 + ((totalElapsedTime - viewStartTime) / timeWindow) * canvasWidth;
-        timelineCtx.strokeStyle = 'rgba(200, 40, 40, 1)';
-        timelineCtx.lineWidth = 3;
-        timelineCtx.beginPath();
-        timelineCtx.moveTo(x, h / 2 - 12);
-        timelineCtx.lineTo(x, h / 2 + 12);
-        timelineCtx.stroke();
-    }
-}
-
-
-function updateHistogramChart() {
-    if (interArrivalTimes.length < 2) {
-        histogramChart.data.labels = [];
-        histogramChart.data.datasets.forEach(ds => ds.data = []);
-        histogramChart.update();
-        return;
-    }
-
-    const maxTime = Math.max(...interArrivalTimes);
-    const numBins = Math.min(Math.ceil(Math.sqrt(interArrivalTimes.length)), 40);
-    const binWidth = maxTime / numBins;
-    if (binWidth <= 0) return;
-
-    const bins = new Array(numBins).fill(0);
-    interArrivalTimes.forEach(t => bins[Math.min(Math.floor(t / binWidth), numBins - 1)]++);
-    
-    const labels = bins.map((_, i) => (i * binWidth).toFixed(2));
-    const totalSamples = interArrivalTimes.length;
-    const theoreticalData = labels.map(label => exponentialPDF(parseFloat(label), lambda) * totalSamples * binWidth);
-
-    histogramChart.data.labels = labels;
-    histogramChart.data.datasets[0].data = bins;
-    histogramChart.data.datasets[1].data = theoreticalData;
-    histogramChart.update();
-}
-
-function updateScatterChart() {
-    if (interArrivalTimes.length < 2) {
-        scatterChart.data.datasets.forEach(ds => ds.data = []);
-        scatterChart.update();
-        return;
-    }
-    
-    const points = [];
-    for (let i = 0; i < interArrivalTimes.length - 1; i++) {
-        points.push({ x: interArrivalTimes[i], y: interArrivalTimes[i + 1] });
-    }
-    scatterChart.data.datasets[0].data = points;
-    
-    const { slope } = calculateLinearRegression(points);
-    const xValues = points.map(p => p.x);
-    const minX = Math.min(...xValues), maxX = Math.max(...xValues);
-    const avgX = xValues.reduce((a,b) => a+b, 0) / xValues.length;
-    const avgY = points.map(p => p.y).reduce((a,b) => a+b, 0) / points.length;
-
-    scatterChart.data.datasets[1].data = [
-        { x: minX, y: avgY + slope * (minX - avgX) },
-        { x: maxX, y: avgY + slope * (maxX - avgX) }
-    ];
-
-    const theoreticalMean = 1 / lambda;
-    const allValues = interArrivalTimes;
-    const axisMax = Math.max(...allValues, 3 * theoreticalMean);
-    scatterChart.options.scales.x.max = axisMax;
-    scatterChart.options.scales.y.max = axisMax;
-    
-    scatterChart.update();
-}
-
-function updateObservations() {
-    const sampleMean = interArrivalTimes.length > 0 ? interArrivalTimes.reduce((a, b) => a + b, 0) / interArrivalTimes.length : 0;
-    const theoreticalMean = 1 / lambda;
-    
-    const points = [];
-    for (let i = 0; i < interArrivalTimes.length - 1; i++) {
-        points.push({ x: interArrivalTimes[i], y: interArrivalTimes[i + 1] });
-    }
-    const { slope } = calculateLinearRegression(points);
-
-    observationsDiv.innerHTML = `
-        <div style="text-align: center; max-width: 800px; margin: auto; font-size: 1.1rem; line-height: 1.7;">
-            <div style="margin-bottom: 1.5rem;">
-                <h5 class="is-size-5 has-text-weight-semibold" style="margin-bottom: 0.5rem;">Distribution Analysis</h5>
-                <p><strong>Arrivals Recorded:</strong> ${arrivalCount} | <strong>Theoretical Mean (1/λ):</strong> ${theoreticalMean.toFixed(3)} s | <strong>Sample Mean:</strong> ${sampleMean.toFixed(3)} s</p>
-            </div>
-            <div>
-                <h5 class="is-size-5 has-text-weight-semibold" style="margin-bottom: 0.5rem;">Independence Analysis</h5>
-                <p><strong>Data Pairs (T_i, T_{i+1}):</strong> ${points.length}</p>
-                <p><strong>Best-fit Line Slope:</strong> ${slope.toFixed(4)} (a slope near 0 indicates no linear relationship)</p>
-            </div>
-        </div>`;
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+    return { slope, intercept };
 }
 
 // --------------------------------------
@@ -306,17 +206,6 @@ function updateObservations() {
 // --------------------------------------
 window.addEventListener("load", () => {
     lambdaVal.textContent = parseFloat(lambdaSlider.value).toFixed(1);
-    lambda = parseFloat(lambdaSlider.value);
+    trialsVal.textContent = trialsSlider.value;
     initializeCharts();
-    resizeCanvas();
-    updateAllVisuals();
-    stopBtn.disabled = true;
-});
-
-window.addEventListener('resize', () => {
-    resizeCanvas();
-    // No need to call updateAllVisuals() here as Chart.js is responsive
-    // and resizeCanvas() already redraws the timeline.
-    // However, keeping it ensures charts also redraw if their containers change size.
-    updateAllVisuals(); 
 });

@@ -1,19 +1,24 @@
 // 1. References & Global Variables
 // --------------------------------------
 const animationContainer = document.getElementById("animationContainer");
+// --- FIXED: Changed "lineChart" back to "2d" ---
 const lineChartCtx = document.getElementById("lineChart").getContext("2d");
 const histogramChartCtx = document.getElementById("histogramChart").getContext("2d");
 
 let lineChartInstance, histogramChartInstance;
 let lambda1 = 10, lambda2 = 5;
-let mode = 'splitting';
+let mode = 'Splitted';
 let mergeTime = -1; // Time at which merge occurs
 
-let total1 = 0, total2 = 0, elapsedSeconds = 0;
+let total1 = 0, total2 = 0, totalMerged = 0, elapsedSeconds = 0;
 let activeParticleCount = 0;
 
 const HISTOGRAM_DATA_POINTS = 100;
-let lineChartData1 = [], lineChartData2 = [], lineChartDataMerged = [], lineChartLabels = [];
+// Data for per-second counts
+let lineChartData1 = [], lineChartData2 = [], lineChartDataMerged = [];
+// Data for running averages
+let avgData1 = [], avgData2 = [], avgDataMerged = [];
+let lineChartLabels = [];
 let histData1 = [], histData2 = [], histDataMerged = [];
 
 const nuc1Img = document.getElementById("nuc1"), nuc2Img = document.getElementById("nuc2"), nucMergedImg = document.getElementById("nucMerged");
@@ -57,9 +62,14 @@ function initializeCharts() {
         data: {
             labels: [],
             datasets: [
+                // Per-second counts
                 { label: "Emitter 1 (λ₁)", data: [], borderColor: "rgba(220, 20, 60, 0.8)", backgroundColor: "rgba(220, 20, 60, 0.1)", tension: 0.2, fill: true },
                 { label: "Emitter 2 (λ₂)", data: [], borderColor: "rgba(30, 144, 255, 0.8)", backgroundColor: "rgba(30, 144, 255, 0.1)", tension: 0.2, fill: true },
-                { label: "Merged (λ₁ + λ₂)", data: [], borderColor: "rgba(50, 205, 50, 0.9)", backgroundColor: "rgba(50, 205, 50, 0.2)", tension: 0.2, fill: true }
+                { label: "Merged (λ₁ + λ₂)", data: [], borderColor: "rgba(50, 205, 50, 0.9)", backgroundColor: "rgba(50, 205, 50, 0.2)", tension: 0.2, fill: true },
+                // Running averages
+                { label: "Avg. Rate (λ₁)", data: [], borderColor: "rgba(220, 20, 60, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false },
+                { label: "Avg. Rate (λ₂)", data: [], borderColor: "rgba(30, 144, 255, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false },
+                { label: "Avg. Rate (Merged)", data: [], borderColor: "rgba(50, 205, 50, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false }
             ]
         },
         options: {
@@ -70,12 +80,11 @@ function initializeCharts() {
                     labels: {
                         filter: (legendItem) => {
                             const label = legendItem.text;
-                            if (mode === 'splitting') return !label.includes('Merged');
+                            if (mode === 'Splitted') return !label.includes('Merged');
                             return label.includes('Merged');
                         }
                     }
                 },
-                // --- ADDED: Annotation configuration ---
                 annotation: {
                     annotations: {} // Will be populated dynamically
                 }
@@ -105,7 +114,7 @@ function initializeCharts() {
                     labels: {
                         filter: (legendItem) => {
                             const label = legendItem.text;
-                            if (mode === 'splitting') return !label.includes('Merged');
+                            if (mode === 'Splitted') return !label.includes('Merged');
                             return label.includes('Merged');
                         }
                     }
@@ -118,15 +127,16 @@ function initializeCharts() {
 // --------------------------------------
 // 4. Event Listeners & Mode Control
 // --------------------------------------
-lambda1Slider.oninput = () => { lambda1 = parseFloat(lambda1Slider.value); lambda1Val.textContent = lambda1; if(mode === 'splitting') resetSimulation(); };
-lambda2Slider.oninput = () => { lambda2 = parseFloat(lambda2Slider.value); lambda2Val.textContent = lambda2; if(mode === 'splitting') resetSimulation(); };
+lambda1Slider.oninput = () => { lambda1 = parseFloat(lambda1Slider.value); lambda1Val.textContent = lambda1; if(mode === 'Splitted') resetSimulation(); };
+lambda2Slider.oninput = () => { lambda2 = parseFloat(lambda2Slider.value); lambda2Val.textContent = lambda2; if(mode === 'Splitted') resetSimulation(); };
 
 toggleModeBtn.addEventListener('click', () => {
-    if (mode === 'splitting') {
+    if (mode === 'Splitted') {
         mode = 'merging';
-        mergeTime = elapsedSeconds; // --- ADDED: Record the merge time ---
+        mergeTime = elapsedSeconds;
+        totalMerged = 0; // Reset merged counter
         toggleModeBtn.classList.add('is-primary');
-        toggleModeBtn.textContent = 'Reset & Split';
+        toggleModeBtn.textContent = 'Reset';
         [lambda1Slider, lambda2Slider].forEach(s => s.disabled = true);
         histData1 = [];
         histData2 = [];
@@ -151,14 +161,16 @@ function resetSimulation() {
     animationContainer.querySelectorAll('.particle').forEach(p => p.remove());
     activeParticleCount = 0;
 
-    mode = 'splitting';
-    mergeTime = -1; // --- ADDED: Reset the merge time ---
+    mode = 'Splitted';
+    mergeTime = -1;
     toggleModeBtn.classList.remove('is-primary');
     toggleModeBtn.textContent = 'Merge';
     [lambda1Slider, lambda2Slider].forEach(s => s.disabled = false);
 
-    total1 = 0; total2 = 0; elapsedSeconds = 0;
-    lineChartData1 = []; lineChartData2 = []; lineChartDataMerged = []; lineChartLabels = [];
+    total1 = 0; total2 = 0; totalMerged = 0; elapsedSeconds = 0;
+    lineChartData1 = []; lineChartData2 = []; lineChartDataMerged = [];
+    avgData1 = []; avgData2 = []; avgDataMerged = [];
+    lineChartLabels = [];
     histData1 = []; histData2 = []; histDataMerged = [];
 
     initializeCharts();
@@ -174,17 +186,24 @@ function runTimeStep() {
 
     if (mode === 'merging') {
         const currentMergedCount = samplePoisson(lambda1 + lambda2);
+        totalMerged += currentMergedCount;
         histDataMerged.push(currentMergedCount);
         if (histDataMerged.length > HISTOGRAM_DATA_POINTS) histDataMerged.shift();
         
         lineChartDataMerged.push(currentMergedCount);
         lineChartData1.push(null);
         lineChartData2.push(null);
+
+        const secondsSinceMerge = elapsedSeconds - mergeTime;
+        const runningAvgMerged = secondsSinceMerge > 0 ? totalMerged / secondsSinceMerge : 0;
+        avgDataMerged.push(runningAvgMerged);
+        avgData1.push(null);
+        avgData2.push(null);
         
         const rect = nucMergedImg.getBoundingClientRect();
         for (let i = 0; i < currentMergedCount; i++) scatterParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
-    } else {
+    } else { // 'Splitted' mode
         const count1 = samplePoisson(lambda1);
         const count2 = samplePoisson(lambda2);
         total1 += count1; total2 += count2;
@@ -194,6 +213,12 @@ function runTimeStep() {
         lineChartData1.push(count1);
         lineChartData2.push(count2);
         lineChartDataMerged.push(null);
+        
+        const runningAvg1 = elapsedSeconds > 0 ? total1 / elapsedSeconds : 0;
+        const runningAvg2 = elapsedSeconds > 0 ? total2 / elapsedSeconds : 0;
+        avgData1.push(runningAvg1);
+        avgData2.push(runningAvg2);
+        avgDataMerged.push(null);
 
         const rect1 = nuc1Img.getBoundingClientRect(), rect2 = nuc2Img.getBoundingClientRect();
         for (let i = 0; i < count1; i++) scatterParticle(rect1.left + rect1.width / 2, rect1.top + rect1.height / 2);
@@ -204,7 +229,6 @@ function runTimeStep() {
     updateAllVisuals();
 }
 
-// --- ADDED: New function to update the annotation ---
 function updateAnnotations() {
     const annotations = {};
     if (mergeTime !== -1) {
@@ -229,10 +253,14 @@ function updateAnnotations() {
 }
 
 function updateAllVisuals() {
+    // Assign per-second data (datasets 0, 1, 2)
     [lineChartData1, lineChartData2, lineChartDataMerged].forEach((data, i) => lineChartInstance.data.datasets[i].data = data);
+    // Assign average data (datasets 3, 4, 5)
+    [avgData1, avgData2, avgDataMerged].forEach((data, i) => lineChartInstance.data.datasets[i + 3].data = data);
+    
     lineChartInstance.data.labels = lineChartLabels;
     
-    updateAnnotations(); // Update the annotation before drawing the chart
+    updateAnnotations();
     lineChartInstance.update();
 
     updateHistogramChart();
@@ -244,7 +272,7 @@ function updateAllVisuals() {
 // --------------------------------------
 function updateHistogramChart() {
     let maxCount = 0;
-    if (mode === 'splitting') {
+    if (mode === 'Splitted') {
         if (histData1.length < 1) {
             histogramChartInstance.data.labels = [];
             histogramChartInstance.data.datasets.forEach(ds => ds.data = []);
@@ -291,8 +319,8 @@ function updateObservations() {
     const obsDiv = document.getElementById("observations");
     let html = "";
     if (mode === "merging") {
-        const mergedData = lineChartDataMerged.filter(v => v !== null);
-        const empMean = mergedData.length > 0 ? mergedData.reduce((a, b) => a + b, 0) / mergedData.length : 0;
+        const secondsSinceMerge = elapsedSeconds - mergeTime;
+        const empMean = secondsSinceMerge > 0 ? totalMerged / secondsSinceMerge : 0;
         const theory = lambda1 + lambda2;
         const absErr = Math.abs(empMean - theory);
         html = `<p><strong>Mode:</strong> Merged | <strong>Theoretical λ:</strong> ${theory.toFixed(2)} | <strong>Empirical Avg:</strong> ${empMean.toFixed(2)} | <strong>|Error|:</strong> ${absErr.toFixed(2)}</p>`;
@@ -301,7 +329,7 @@ function updateObservations() {
         const emp2 = elapsedSeconds > 0 ? total2 / elapsedSeconds : 0;
         const absErr1 = Math.abs(emp1 - lambda1);
         const absErr2 = Math.abs(emp2 - lambda2);
-        html = `<p><strong>Mode:</strong> Splitting</p>
+        html = `<p><strong>Mode:</strong> Splitted</p>
                 <p><strong>Emitter 1:</strong> Theo. λ₁=${lambda1}, Emp. Avg≈${emp1.toFixed(2)}, |Error|≈${absErr1.toFixed(2)}</p>
                 <p><strong>Emitter 2:</strong> Theo. λ₂=${lambda2}, Emp. Avg≈${emp2.toFixed(2)}, |Error|≈${absErr2.toFixed(2)}</p>`;
     }

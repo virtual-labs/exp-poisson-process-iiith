@@ -24,13 +24,13 @@
           </ul>
         </div>
         <div class="subheading-box">
-          <p class="title">Merging and Splitting of a Poisson Process</p>
+          <p class="title">Merging of a Poisson Process</p>
         </div>
         <!-- [MODIFIED] Instructions Section -->
         <div class="v-collapsible-instruction-container v-instruction-container">
           <div class="v-collapsible is-size-4">Instructions</div>
           <div class="v-content">
-            <p>This module demonstrates two key operations on Poisson processes: <strong>superposition (merging)</strong> and <strong>thinning (splitting)</strong>. When two independent Poisson streams are combined, the resulting stream is also a Poisson process. Conversely, a single stream can be split into multiple independent Poisson sub-streams.</p>
+            <p>This module demonstrates two key operations on Poisson processes: <strong>superposition (merging)</strong>. When two independent Poisson streams are combined, the resulting stream is also a Poisson process.</p>
             <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
             <ul style="list-style: disc">
               <li>To visually and statistically verify that merging two independent Poisson processes with rates \(\lambda_1\) and \(\lambda_2\) results in a new Poisson process with a combined rate of \(\lambda_1 + \lambda_2\).</li>
@@ -40,7 +40,7 @@
             <ul style="list-style: disc;">
               <li><strong>Rate \(\lambda_1\) (Emitter 1):</strong> Adjusts the average event rate for the first Poisson process.</li>
               <li><strong>Rate \(\lambda_2\) (Emitter 2):</strong> Adjusts the average event rate for the second Poisson process.</li>
-              <li><strong>Merge / Reset & Split Button:</strong> Toggles the simulation between two states: the merged state (one combined process) and the split state (two independent processes).</li>
+              <li><strong>Merge / Reset Button:</strong> Toggles the simulation between two states: the merged state (one combined process) and the splited state (two independent processes).</li>
             </ul>
             <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
             <ul style="list-style: disc;">
@@ -55,7 +55,7 @@
             <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
             <ul style="list-style: disc;">
               <li>When in the <strong>merged state</strong>, the running average rate shown in the "Observations" panel should converge towards the theoretical sum \(\lambda_1 + \lambda_2\).</li>
-              <li>When in the <strong>split state</strong>, the two processes run independently, and their individual behaviors are governed by their respective rates set by the sliders.</li>
+              <li>When in the <strong>splitted state</strong>, the two processes run independently, and their individual behaviors are governed by their respective rates set by the sliders.</li>
               <li>The histogram of event counts should always closely match the shape of the theoretical Poisson distribution, whether in the merged or split state.</li>
             </ul>
           </div>

@@ -28,28 +28,32 @@
         <div class="v-collapsible-instruction-container v-instruction-container">
           <div class="v-collapsible is-size-4">Instructions</div>
           <div class="v-content">
-            <p>This module explores two fundamental properties of a <strong>Poisson process</strong>: the distribution of its <strong>inter-arrival times</strong> and their statistical <strong>independence</strong>.</p>
+            <p>This experiment demonstrates two fundamental properties of a <strong>Poisson process</strong> by running a large number of simulated trials.</p>
             <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
             <ul style="list-style: disc">
-              <li>To observe that the time \(T\) between consecutive events in a Poisson process with rate \(\lambda\) follows an Exponential distribution.</li>
-              <li>To visually verify that these inter-arrival times, \(T_i\) and \(T_{i+1}\), are independent of each other.</li>
+              <li>To show that the inter-arrival time \(T_i\) in a Poisson process follows an <strong>Exponential distribution</strong> with PDF \(f(t) = \lambda e^{-\lambda t}\).</li>
+              <li>To verify that consecutive inter-arrival times, \(T_i\) and \(T_{i+1}\), are statistically <strong>independent</strong>.</li>
             </ul>
-            <h4 style="font-weight: 600; font-size: 1.15em;">Controls</h4>
+            
+            <!-- /// START OF ADDED SECTION /// -->
+            <h4 style="font-weight: 600; font-size: 1.15em;">Understanding the Notation</h4>
+            <p>Imagine events occurring on a timeline. We use the following notation to describe them:</p>
             <ul style="list-style: disc;">
-              <li><strong>Poisson Rate (\(\lambda\)):</strong> Adjust the average number of arrivals per unit of time using the slider.</li>
-              <li><strong>Start / Stop / Reset:</strong> Control the flow of the simulation.</li>
+              <li><strong>Event Times (t<sub>i</sub>):</strong> These are the absolute moments when events occur. For example, <em>t<sub>1</sub></em> is the time of the 1st event, and <em>t<sub>2</sub></em> is the time of the 2nd event.</li>
+              <li><strong>Inter-arrival Time (T<sub>i</sub>):</strong> This is the waiting time, or the duration <em>between</em> consecutive events. It is defined as <strong>T<sub>i</sub> = t<sub>i</sub> - t<sub>i-1</sub></strong>. For example, <em>T<sub>2</sub></em> is the time that passes between the 1st and 2nd events (i.e., <em>t<sub>2</sub> - t<sub>1</sub></em>).</li>
             </ul>
-            <h4 style="font-weight: 600; font-size: 1.15em;">Visualization</h4>
-            <ul style="list-style: disc;">
-              <li><strong>Arrivals Timeline:</strong> Shows the real-time occurrence of events.</li>
-              <li><strong>Distribution Analysis:</strong> Compares the histogram of observed inter-arrival times (in <span style="color: #1e90ff;">blue</span>) with the theoretical Exponential PDF, \(f(t) = \lambda e^{-\lambda t}\) (in <span style="color: #ff9f40;">orange</span>).</li>
-              <li><strong>Independence Analysis:</strong> A scatter plot of consecutive inter-arrival times \((T_i, T_{i+1})\). Independence is suggested if the points form a random cloud with no clear pattern.</li>
-            </ul>
-            <h4 style="font-weight: 600; font-size: 1.15em;">Interpretation</h4>
-            <ul style="list-style: disc;">
-              <li>As more events are recorded, the empirical histogram should more closely match the shape of the theoretical exponential curve.</li>
-              <li>The best-fit line in the scatter plot should have a slope close to <strong>zero</strong>, confirming that the length of one waiting period does not predict the length of the next.</li>
-            </ul>
+            <p>This experiment analyzes the properties of these inter-arrival times (T<sub>i</sub>).</p>
+            <!-- /// END OF ADDED SECTION /// -->
+
+            <h4 style="font-weight: 600; font-size: 1.15em;">Procedure</h4>
+            <ol style="list-style: decimal; margin-left: 20px;">
+                <li>Set the <strong>Poisson Rate (\(\lambda\))</strong>, which is the average number of events per second.</li>
+                <li>Choose which inter-arrival time to analyze using the dropdown (e.g., the 1st, 2nd, or 3rd). This selects the index <em>i</em> for T<sub>i</sub>.</li>
+                <li>Select the <strong>Number of Trials</strong> to run. A higher number will produce a more accurate result.</li>
+                <li>Click <strong>"Run Simulation"</strong>. The simulation will run all trials instantly.</li>
+                <li><strong>Analyze the Distribution:</strong> The left chart shows a histogram of the collected T<sub>i</sub> values. Observe how closely the <span style="color: #1e90ff;">blue</span> histogram matches the theoretical <span style="color: #ff9f40;">orange</span> Exponential curve.</li>
+                <li><strong>Analyze Independence:</strong> The right chart plots pairs of consecutive inter-arrival times, <strong>(T<sub>i</sub>, T<sub>i+1</sub>)</strong>. If the points form a random, shapeless cloud with a best-fit line slope near zero, the times are independent.</li>
+            </ol>
           </div>
         </div>
         <br />
@@ -64,40 +68,44 @@
                   <span id="lambdaVal" class="value-display">2.0</span>
                 </div>
                 <div class="field">
-                  <label class="label">Controls:</label>
-                  <div class="buttons has-addons is-centered">
-                    <button id="startBtn" class="button is-primary">Start</button>
-                    <button id="stopBtn" class="button">Stop</button>
-                    <button id="resetBtn" class="button is-danger is-light">Reset</button>
-                  </div>
+                    <label for="interArrivalTimeIndex" class="label">Inter-arrival Time to Analyze (T<sub>i</sub>):</label>
+                    <div class="select is-fullwidth" style="margin: 0 auto; max-width: 200px;">
+                        <select id="interArrivalTimeIndex">
+                            <option value="1" selected>1st (T₁)</option>
+                            <option value="2">2nd (T₂)</option>
+                            <option value="3">3rd (T₃)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="numTrials" class="label">Number of Trials:</label>
+                    <input type="range" id="numTrials" min="100" max="5000" step="100" value="1000" class="slider" />
+                    <span id="numTrialsVal" class="value-display">1000</span>
                 </div>
               </div>
-            </div>
-            <div class="white-boxed-panel">
-              <h4 class="v-datalist-subtitle">Arrivals Timeline</h4>
-              <div id="timelineContainer">
-                <canvas id="timelineCanvas"></canvas>
+              <div class="buttons is-centered" style="margin-top: 1rem;">
+                <button id="runBtn" class="button is-primary is-medium">Run Simulation</button>
+                <button id="resetBtn" class="button is-danger is-light is-medium">Reset</button>
               </div>
             </div>
             <div class="columns is-desktop">
               <div class="column">
                 <div class="white-boxed-panel">
-                  <h4 class="v-datalist-subtitle">Distribution Analysis</h4>
+                  <h4 class="v-datalist-subtitle">Distribution Analysis (of T<sub>i</sub>)</h4>
                   <div class="chart-wrapper" style="height:450px"><canvas id="histogramChart"></canvas></div>
                 </div>
               </div>
               <div class="column">
                 <div class="white-boxed-panel">
-                  <h4 class="v-datalist-subtitle">Independence Analysis</h4>
+                  <h4 class="v-datalist-subtitle">Independence Analysis (T<sub>i</sub> vs T<sub>i+1</sub>)</h4>
                   <div class="chart-wrapper" style="height:450px"><canvas id="scatterChart"></canvas></div>
                 </div>
               </div>
             </div>
-            <!-- [UNIFIED] Observations panel structure -->
             <div class="white-boxed-panel">
               <h4 class="v-datalist-subtitle">Observations</h4>
               <div id="observations" style="padding: 10px; text-align: center;">
-                <!-- JS content here -->
+                <p>Adjust the settings and click "Run Simulation" to see the results.</p>
               </div>
             </div>
           </div>
