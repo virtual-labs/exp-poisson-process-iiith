@@ -1,7 +1,6 @@
 // 1. References & Global Variables
 // --------------------------------------
 const animationContainer = document.getElementById("animationContainer");
-// --- FIXED: Changed "lineChart" back to "2d" ---
 const lineChartCtx = document.getElementById("lineChart").getContext("2d");
 const histogramChartCtx = document.getElementById("histogramChart").getContext("2d");
 
@@ -62,11 +61,9 @@ function initializeCharts() {
         data: {
             labels: [],
             datasets: [
-                // Per-second counts
                 { label: "Emitter 1 (λ₁)", data: [], borderColor: "rgba(220, 20, 60, 0.8)", backgroundColor: "rgba(220, 20, 60, 0.1)", tension: 0.2, fill: true },
                 { label: "Emitter 2 (λ₂)", data: [], borderColor: "rgba(30, 144, 255, 0.8)", backgroundColor: "rgba(30, 144, 255, 0.1)", tension: 0.2, fill: true },
                 { label: "Merged (λ₁ + λ₂)", data: [], borderColor: "rgba(50, 205, 50, 0.9)", backgroundColor: "rgba(50, 205, 50, 0.2)", tension: 0.2, fill: true },
-                // Running averages
                 { label: "Avg. Rate (λ₁)", data: [], borderColor: "rgba(220, 20, 60, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false },
                 { label: "Avg. Rate (λ₂)", data: [], borderColor: "rgba(30, 144, 255, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false },
                 { label: "Avg. Rate (Merged)", data: [], borderColor: "rgba(50, 205, 50, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false }
@@ -86,7 +83,7 @@ function initializeCharts() {
                     }
                 },
                 annotation: {
-                    annotations: {} // Will be populated dynamically
+                    annotations: {}
                 }
             }
         }
@@ -98,12 +95,20 @@ function initializeCharts() {
         data: {
             labels: [],
             datasets: [
-                { label: 'Empirical (λ₁)', data: [], backgroundColor: "rgba(220, 20, 60, 0.6)" },
-                { label: 'Empirical (λ₂)', data: [], backgroundColor: "rgba(30, 144, 255, 0.6)" },
-                { label: 'Theoretical PMF (λ₁)', data: [], type: 'line', borderColor: 'rgba(220, 20, 60, 1)', borderWidth: 2, pointRadius: 0, fill: false },
-                { label: 'Theoretical PMF (λ₂)', data: [], type: 'line', borderColor: 'rgba(30, 144, 255, 1)', borderWidth: 2, pointRadius: 0, fill: false },
-                { label: 'Empirical (Merged)', data: [], backgroundColor: 'rgba(50, 205, 50, 0.6)' },
-                { label: 'Theoretical PMF (Merged)', data: [], type: 'line', borderColor: 'rgba(50, 205, 50, 1)', borderWidth: 3, pointRadius: 0, fill: false }
+                // Empirical Data (Bars)
+                { label: 'Empirical (λ₁)', data: [], backgroundColor: "rgba(220, 20, 60, 0.6)", order: 3, stack: 'stack1' },
+                { label: 'Empirical (λ₂)', data: [], backgroundColor: "rgba(30, 144, 255, 0.6)", order: 3, stack: 'stack2' },
+                { label: 'Empirical (Merged)', data: [], backgroundColor: 'rgba(50, 205, 50, 0.6)', order: 3, stack: 'stack3' },
+                
+                // Ideal Heights (Scatter Markers)
+                { label: 'Ideal Height (λ₁)', data: [], type: 'scatter', backgroundColor: 'rgba(220, 20, 60, 1)', pointStyle: 'rect', radius: 4, order: 1 },
+                { label: 'Ideal Height (λ₂)', data: [], type: 'scatter', backgroundColor: 'rgba(30, 144, 255, 1)', pointStyle: 'rect', radius: 4, order: 1 },
+                { label: 'Ideal Height (Merged)', data: [], type: 'scatter', backgroundColor: 'rgba(50, 205, 50, 1)', pointStyle: 'rect', radius: 4, order: 1 },
+
+                // Ideal PMF Connecting Lines
+                { label: 'Ideal PMF Line (λ₁)', data: [], type: 'line', borderColor: 'rgba(220, 20, 60, 1)', borderWidth: 2, pointRadius: 0, tension: 0.2, fill: false, order: 2 },
+                { label: 'Ideal PMF Line (λ₂)', data: [], type: 'line', borderColor: 'rgba(30, 144, 255, 1)', borderWidth: 2, pointRadius: 0, tension: 0.2, fill: false, order: 2 },
+                { label: 'Ideal PMF Line (Merged)', data: [], type: 'line', borderColor: 'rgba(50, 205, 50, 1)', borderWidth: 3, pointRadius: 0, tension: 0.2, fill: false, order: 2 },
             ]
         },
         options: {
@@ -114,6 +119,7 @@ function initializeCharts() {
                     labels: {
                         filter: (legendItem) => {
                             const label = legendItem.text;
+                            if (label.includes('Ideal')) return false; // Hide all theoretical parts from legend
                             if (mode === 'Splitted') return !label.includes('Merged');
                             return label.includes('Merged');
                         }
@@ -134,7 +140,7 @@ toggleModeBtn.addEventListener('click', () => {
     if (mode === 'Splitted') {
         mode = 'merging';
         mergeTime = elapsedSeconds;
-        totalMerged = 0; // Reset merged counter
+        totalMerged = 0;
         toggleModeBtn.classList.add('is-primary');
         toggleModeBtn.textContent = 'Reset';
         [lambda1Slider, lambda2Slider].forEach(s => s.disabled = true);
@@ -203,7 +209,7 @@ function runTimeStep() {
         const rect = nucMergedImg.getBoundingClientRect();
         for (let i = 0; i < currentMergedCount; i++) scatterParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
-    } else { // 'Splitted' mode
+    } else {
         const count1 = samplePoisson(lambda1);
         const count2 = samplePoisson(lambda2);
         total1 += count1; total2 += count2;
@@ -253,16 +259,11 @@ function updateAnnotations() {
 }
 
 function updateAllVisuals() {
-    // Assign per-second data (datasets 0, 1, 2)
     [lineChartData1, lineChartData2, lineChartDataMerged].forEach((data, i) => lineChartInstance.data.datasets[i].data = data);
-    // Assign average data (datasets 3, 4, 5)
     [avgData1, avgData2, avgDataMerged].forEach((data, i) => lineChartInstance.data.datasets[i + 3].data = data);
-    
     lineChartInstance.data.labels = lineChartLabels;
-    
     updateAnnotations();
     lineChartInstance.update();
-
     updateHistogramChart();
     updateObservations();
 }
@@ -272,45 +273,49 @@ function updateAllVisuals() {
 // --------------------------------------
 function updateHistogramChart() {
     let maxCount = 0;
+    histogramChartInstance.data.datasets.forEach(ds => ds.data = []);
+    
     if (mode === 'Splitted') {
         if (histData1.length < 1) {
             histogramChartInstance.data.labels = [];
-            histogramChartInstance.data.datasets.forEach(ds => ds.data = []);
             histogramChartInstance.update(); return;
         }
         const freq1 = new Map(), freq2 = new Map();
         histData1.forEach(c => { freq1.set(c, (freq1.get(c) || 0) + 1); maxCount = Math.max(maxCount, c); });
         histData2.forEach(c => { freq2.set(c, (freq2.get(c) || 0) + 1); maxCount = Math.max(maxCount, c); });
         
-        const labels = Array.from({ length: maxCount + 1 }, (_, i) => i);
+        const labels = Array.from({ length: maxCount + 5 }, (_, i) => i);
         const totalPoints = histData1.length;
         
         histogramChartInstance.data.labels = labels;
         histogramChartInstance.data.datasets[0].data = labels.map(i => (freq1.get(i) || 0) / totalPoints);
         histogramChartInstance.data.datasets[1].data = labels.map(i => (freq2.get(i) || 0) / totalPoints);
-        histogramChartInstance.data.datasets[2].data = labels.map(k => poissonPMF(lambda1, k));
-        histogramChartInstance.data.datasets[3].data = labels.map(k => poissonPMF(lambda2, k));
-        histogramChartInstance.data.datasets[4].data = [];
-        histogramChartInstance.data.datasets[5].data = [];
-    } else {
+        
+        // MODIFIED: This is the key change. An offset of -0.15 is applied to the x-values
+        // for the red markers (lambda1) to shift them slightly to the left for better visibility.
+        const xOffset = -0.15;
+        histogramChartInstance.data.datasets[3].data = labels.map(k => ({ x: k + xOffset, y: poissonPMF(lambda1, k) }));
+        histogramChartInstance.data.datasets[6].data = labels.map(k => ({ x: k + xOffset, y: poissonPMF(lambda1, k) }));
+
+        // The blue markers (lambda2) remain centered at their integer x-value.
+        histogramChartInstance.data.datasets[4].data = labels.map(k => ({ x: k, y: poissonPMF(lambda2, k) }));
+        histogramChartInstance.data.datasets[7].data = labels.map(k => ({ x: k, y: poissonPMF(lambda2, k) }));
+
+    } else { // Merged Mode
         if (histDataMerged.length < 1) {
             histogramChartInstance.data.labels = [];
-            histogramChartInstance.data.datasets.forEach(ds => ds.data = []);
             histogramChartInstance.update(); return;
         }
         const freqM = new Map();
         histDataMerged.forEach(c => { freqM.set(c, (freqM.get(c) || 0) + 1); maxCount = Math.max(maxCount, c); });
 
-        const labels = Array.from({ length: maxCount + 1 }, (_, i) => i);
+        const labels = Array.from({ length: maxCount + 5 }, (_, i) => i);
         const totalPoints = histDataMerged.length;
 
         histogramChartInstance.data.labels = labels;
-        histogramChartInstance.data.datasets[4].data = labels.map(i => (freqM.get(i) || 0) / totalPoints);
-        histogramChartInstance.data.datasets[5].data = labels.map(k => poissonPMF(lambda1 + lambda2, k));
-        histogramChartInstance.data.datasets[0].data = [];
-        histogramChartInstance.data.datasets[1].data = [];
-        histogramChartInstance.data.datasets[2].data = [];
-        histogramChartInstance.data.datasets[3].data = [];
+        histogramChartInstance.data.datasets[2].data = labels.map(i => (freqM.get(i) || 0) / totalPoints);
+        histogramChartInstance.data.datasets[5].data = labels.map(k => ({ x: k, y: poissonPMF(lambda1 + lambda2, k) }));
+        histogramChartInstance.data.datasets[8].data = labels.map(k => ({ x: k, y: poissonPMF(lambda1 + lambda2, k) }));
     }
     histogramChartInstance.update();
 }
