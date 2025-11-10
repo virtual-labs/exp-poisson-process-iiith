@@ -1,6 +1,4 @@
-### Procedure
-
-#### **Sub-Experiment 1: Emergence of Poisson Process**
+### **Sub-Experiment 1: Emergence of Poisson Process**
 
 This experiment demonstrates how a **Poisson Process** emerges from **Repeated Bernoulli Trials** by gradually increasing the number of trials \( n \). The **Binomial distribution** applies when we have a fixed number of events \( n \), each with a constant probability of success \( p \). But what if we don’t know the number of trials? Instead, we know the **average rate of success per unit time**, denoted as:
 
@@ -16,7 +14,7 @@ Your task is to:
 
 ---
 
-#### **Sub-Experiment 2: Merging of Poisson Processes**
+### **Sub-Experiment 2: Merging of Poisson Processes**
 
 Next, we demonstrate the merging of Poisson processes using an analogy of radioactive emitters. We have 2 emitters with adjustable average rates.
 
@@ -31,7 +29,7 @@ Your task is to:
 
 ---
 
-#### **Sub-Experiment 3: Inter-arrival Times of the Poisson Process**
+### **Sub-Experiment 3: Inter-arrival Times of the Poisson Process**
 
 Finally, we show that the **inter-arrival times** (i.e., the time between successive events) in a Poisson process follow an **Exponential distribution**. We also verify that these times are **independent**.
 

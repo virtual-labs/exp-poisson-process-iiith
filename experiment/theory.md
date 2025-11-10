@@ -1,12 +1,10 @@
-### Overview
-
 The Poisson distribution arises naturally as a limit of the binomial distribution when the number of trials becomes large and the success probability becomes small, such that the expected number of successes remains constant. This is a key idea in stochastic processes and models real-world arrivald such as radioactive decay, call arrivals, and queue arrivals.
 
 Let $X_n \sim \text{Bin}(n, p)$ denote a binomial random variable, where:
 
-* $n$ is the number of independent Bernoulli trials.
-* $p$ is the probability of success.
-* $\lambda = np$ is the expected number of successes.
+- $n$ is the number of independent Bernoulli trials.
+- $p$ is the probability of success.
+- $\lambda = np$ is the expected number of successes.
 
 We are interested in the behavior of $X_n$ as $n \to \infty$, such that $\lambda = np$ is held constant.
 
@@ -25,9 +23,9 @@ $$
 
 Using the limits:
 
-* $\frac{n(n-1)\dots(n-k+1)}{n^k} \to 1$,
-* $\left(1 - \frac{\lambda}{n}\right)^n \to e^{-\lambda}$,
-* $\left(1 - \frac{\lambda}{n}\right)^{-k} \to 1$,
+- $\frac{n(n-1)\dots(n-k+1)}{n^k} \to 1$,
+- $\left(1 - \frac{\lambda}{n}\right)^n \to e^{-\lambda}$,
+- $\left(1 - \frac{\lambda}{n}\right)^{-k} \to 1$,
 
 the expression converges to:
 
