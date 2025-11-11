@@ -2,7 +2,7 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "Which distribution describes the number of events in a Poisson process over a fixed interval?",
+      "question": "1. Which distribution describes the number of events in a Poisson process over a fixed interval?",
       "answers": {
         "a": "Binomial distribution",
         "b": "Exponential distribution",
@@ -19,7 +19,7 @@
       "difficulty": "beginner"
     },
     {
-      "question": "What is a key characteristic of a Poisson process?",
+      "question": "2. What is a key characteristic of a Poisson process?",
       "answers": {
         "a": "Events occur at regular intervals",
         "b": "Events occur independently over time",
@@ -36,7 +36,7 @@
       "difficulty": "beginner"
     },
     {
-      "question": "What is the mean number of events in a Poisson distribution with rate λ over time t?",
+      "question": "3. What is the mean number of events in a Poisson distribution with rate λ over time t?",
       "answers": {
         "a": "λ",
         "b": "λ + t",
@@ -53,7 +53,7 @@
       "difficulty": "intermediate"
     },
     {
-      "question": "What distribution models the time between two consecutive events in a Poisson process?",
+      "question": "4. What distribution models the time between two consecutive events in a Poisson process?",
       "answers": {
         "a": "Poisson distribution",
         "b": "Exponential distribution",
@@ -70,7 +70,7 @@
       "difficulty": "intermediate"
     },
     {
-      "question": "Which of the following is NOT an assumption of a Poisson process?",
+      "question": "5. Which of the following is NOT an assumption of a Poisson process?",
       "answers": {
         "a": "Events occur independently",
         "b": "The rate λ is constant",
