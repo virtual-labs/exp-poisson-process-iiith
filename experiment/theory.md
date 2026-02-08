@@ -11,14 +11,18 @@ We are interested in the behavior of $X_n$ as $n \to \infty$, such that $\lambda
 Let $X_n \sim \text{Bin}(n, \lambda/n)$. Then:
 
 $$
+\begin{equation}
 \lim_{n \to \infty} \mathbb{P}(X_n = k) = \frac{e^{-\lambda} \lambda^k}{k!}, \quad \text{for all } k \in \{0,1,2,....\}.
+\end{equation}
 $$
 
 $$
+\begin{equation}
 \begin{aligned}
 \mathbb{P}(X_n = k) &= \binom{n}{k} \left(\frac{\lambda}{n}\right)^k \left(1 - \frac{\lambda}{n}\right)^{n - k} \\
 &= \frac{n(n-1)\dots(n-k+1)}{k!} \cdot \left(\frac{\lambda^k}{n^k}\right) \cdot \left(1 - \frac{\lambda}{n}\right)^n \cdot \left(1 - \frac{\lambda}{n}\right)^{-k}.
 \end{aligned}
+\end{equation}
 $$
 
 Using the limits:
@@ -30,17 +34,21 @@ Using the limits:
 the expression converges to:
 
 $$
+\begin{equation}
 \frac{\lambda^k e^{-\lambda}}{k!}.
+\end{equation}
 $$
 
 This proves convergence in distribution to the Poisson distribution.
 
-### Theorem: Superposition
+### 1: Superposition
 
 Let $X \sim \text{Poisson}(\lambda_1 t), Y \sim \text{Poisson}(\lambda_2 t)$, then:
 
 $$
+\begin{equation}
 \mathbb{P}(X + Y = k) = \sum_{i=0}^{k} \mathbb{P}(X = i) \mathbb{P}(Y = k - i)
+\end{equation}
 $$
 
 $$
@@ -58,12 +66,12 @@ $$
 
 This is the PMF of a $\text{Poisson}((\lambda_1 + \lambda_2)t)$ process.
 
-### Inter-arrival Times in a Poisson Process
+### 2: Inter-arrival Times in a Poisson Process
 
 Let $T_1, T_2, \dots$ be arrival times in a homogeneous Poisson process with rate $\lambda$.
 Define inter-arrival times $S_n = T_n - T_{n - 1}$ (with $T_0 = 0$).
 
-### Theorem: Exponential Inter-arrival Times
+#### Exponential Inter-arrival Times
 
 Each $S_n \sim \text{Exp}(\lambda)$, and the $S_n$ are i.i.d. (independent and identically distributed).
 
@@ -71,19 +79,25 @@ Each $S_n \sim \text{Exp}(\lambda)$, and the $S_n$ are i.i.d. (independent and i
 The probability that no event occurs in the interval $[0, t]$ is:
 
 $$
+\begin{equation}
 \mathbb{P}(S_1 > t) = \mathbb{P}(N(t) = 0) = e^{-\lambda t}
+\end{equation}
 $$
 
 So the Cumulative Distribution Function (CDF) of $S_1$ is:
 
 $$
+\begin{equation}
 F_{S_1}(t) = \mathbb{P}(S_1 \le t) = 1 - \mathbb{P}(S_1 > t) = 1 - e^{-\lambda t}
+\end{equation}
 $$
 
 The Probability Density Function (PDF) is the derivative of the CDF:
 
 $$
+\begin{equation}
 f_{S_1}(t) = \frac{d}{dt}(1 - e^{-\lambda t}) = \lambda e^{-\lambda t}, \quad t \ge 0
+\end{equation}
 $$
 
 By the memoryless property of the Poisson process, the process effectively "restarts" after each arrival. This means the time until the next arrival ($S_2$) is independent of the previous waiting time and follows the same distribution. Hence, $S_2, S_3, \dots \sim \text{Exp}(\lambda)$ i.i.d.

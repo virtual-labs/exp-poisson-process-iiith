@@ -2,7 +2,7 @@
 
 This experiment demonstrates how a **Poisson Process** emerges from **Repeated Bernoulli Trials** by gradually increasing the number of trials \( n \). The **Binomial distribution** applies when we have a fixed number of events \( n \), each with a constant probability of success \( p \). But what if we don’t know the number of trials? Instead, we know the **average rate of success per unit time**, denoted as:
 
-λ = n × p
+λ = np
 
 Here, \( λ \) is the **rate of successes per time unit**. As \( n → ∞ \) and \( p → 0 \), while keeping \( λ \) constant, the **Binomial distribution converges to a Poisson distribution**.
 
