@@ -61,9 +61,9 @@ function initializeCharts() {
         data: {
             labels: [],
             datasets: [
-                { label: "Emitter 1 (λ₁)", data: [], borderColor: "rgba(220, 20, 60, 0.8)", backgroundColor: "rgba(220, 20, 60, 0.1)", tension: 0.2, fill: true },
-                { label: "Emitter 2 (λ₂)", data: [], borderColor: "rgba(30, 144, 255, 0.8)", backgroundColor: "rgba(30, 144, 255, 0.1)", tension: 0.2, fill: true },
-                { label: "Merged (λ₁ + λ₂)", data: [], borderColor: "rgba(50, 205, 50, 0.9)", backgroundColor: "rgba(50, 205, 50, 0.2)", tension: 0.2, fill: true },
+                { label: "Nuclei 1 (λ₁)", data: [], borderColor: "rgba(220, 20, 60, 0.8)", backgroundColor: "rgba(220, 20, 60, 0.1)", tension: 0.2, fill: true },
+                { label: "Nuclei 2 (λ₂)", data: [], borderColor: "rgba(30, 144, 255, 0.8)", backgroundColor: "rgba(30, 144, 255, 0.1)", tension: 0.2, fill: true },
+                { label: "Merged Nuclei (λ₁ + λ₂)", data: [], borderColor: "rgba(50, 205, 50, 0.9)", backgroundColor: "rgba(50, 205, 50, 0.2)", tension: 0.2, fill: true },
                 { label: "Avg. Rate (λ₁)", data: [], borderColor: "rgba(220, 20, 60, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false },
                 { label: "Avg. Rate (λ₂)", data: [], borderColor: "rgba(30, 144, 255, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false },
                 { label: "Avg. Rate (Merged)", data: [], borderColor: "rgba(50, 205, 50, 1)", borderWidth: 3, pointRadius: 0, borderDash: [5, 5], fill: false }
