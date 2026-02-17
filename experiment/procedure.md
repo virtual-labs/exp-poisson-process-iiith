@@ -2,14 +2,14 @@
 
 This experiment demonstrates how a **Poisson Process** emerges from **Repeated Bernoulli Trials** by gradually increasing the number of trials \( n \). The **Binomial distribution** applies when we have a fixed number of events \( n \), each with a constant probability of success \( p \). But what if we don’t know the number of trials? Instead, we know the **average rate of success per unit time**, denoted as:
 
-λ = np
+$λ$ = np
 
-Here, \( λ \) is the **rate of successes per time unit**. As \( n → ∞ \) and \( p → 0 \), while keeping \( λ \) constant, the **Binomial distribution converges to a Poisson distribution**.
+Here, \( $λ$ \) is the **rate of successes per time unit**. As \( n → ∞ \) and \( p → 0 \), while keeping \( $λ$ \) constant, the **Binomial distribution converges to a Poisson distribution**.
 
 Your task is to:
 
 1. **Start with a small value of \( n \)** — the distribution should resemble a Bernoulli/Binomial behavior.
-2. **Gradually increase \( n \)** while keeping \( λ \) fixed — observe how the two distributions on the chart begin to overlap.
+2. **Gradually increase \( n \)** while keeping \( $λ$ \) fixed — observe how the two distributions on the chart begin to overlap.
 3. **Observe the decrease in the error** metrics displayed below the chart as the value of \( n \) is increased, confirming the convergence.
 
 ---
@@ -24,7 +24,7 @@ Next, we demonstrate the merging of Poisson processes using an analogy of radioa
 
 Your task is to:
 
-1. **Verify the merging phenomenon**: Start the simulation and click "Merge". Observe in the "Observations" panel how the combined emission rate approaches the theoretical sum (λ₁ + λ₂).
+1. **Verify the merging phenomenon**: Start the simulation and click "Merge". Observe in the "Observations" panel how the combined emission rate approaches the theoretical sum ($\lambda_1 + \lambda_2$).
 2. **Change the rates**: Adjust the sliders for λ₁ and λ₂ and repeat the process to see that the principle holds for different values.
 
 ---
@@ -33,7 +33,7 @@ Your task is to:
 
 Finally, we show that the **inter-arrival times** (i.e., the time between successive events) in a Poisson process follow an **Exponential distribution**. We also verify that these times are **independent**.
 
-- If a Poisson process has rate \( λ \), the inter-arrival time \( T \) is an **Exponential random variable** with probability density: f(t) = λe⁻ˡᵗ.
+- If a Poisson process has rate \( $λ$ \), the inter-arrival time \( T \) is an **Exponential random variable** with probability density: $f(t) = \lambda e^{-λt}$.
 - The independence of inter-arrival times means that the time until the next event does not depend on when the last event occurred.
 
 Your task is to:
