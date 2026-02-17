@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css" />
+  <link rel="stylesheet" href="./css/style.css" /> 
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  <title>Inter-arrival Times of a Poisson Process</title>
+</head>
+<body>
+  <div class="container">
+    <div class="tasks-heading">Tasks</div>
+    <div class="columns is-centered">
+      <div class="column is-11-desktop is-12-tablet is-12-mobile">
+        <div class="v-tabs">
+          <ul>
+            <li><a href="exp1.html">Sub Experiment - 1</a></li>
+            <li><a href="exp2.html">Sub Experiment - 2</a></li>
+            <li class="active"><a href="exp3.html">Sub Experiment - 3</a></li>
+          </ul>
+        </div>
+        <div class="subheading-box">
+          <p class="title">Properties of Inter-arrival Times</p>
+        </div>
+        <div class="v-collapsible-instruction-container v-instruction-container">
+          <div class="v-collapsible is-size-4">Instructions</div>
+          <div class="v-content">
+            <p>This experiment demonstrates two fundamental properties of a <strong>Poisson process</strong> by running a large number of simulated trials.</p>
+            <h4 style="font-weight: 600; font-size: 1.15em;">Objective</h4>
+            <ul style="list-style: disc">
+              <li>To show that the inter-arrival time \(T_i\) in a Poisson process follows an <strong>Exponential distribution</strong> with PDF \(f(t) = \lambda e^{-\lambda t}\).</li>
+              <li>To verify that consecutive inter-arrival times, \(T_i\) and \(T_{i+1}\), are statistically <strong>independent</strong>.</li>
+            </ul>
+            
+            <!-- /// START OF ADDED SECTION /// -->
+            <h4 style="font-weight: 600; font-size: 1.15em;">Understanding the Notation</h4>
+            <p>Imagine events occurring on a timeline. We use the following notation to describe them:</p>
+            <ul style="list-style: disc;">
+              <li><strong>Event Times (t<sub>i</sub>):</strong> These are the absolute moments when events occur. For example, <em>t<sub>1</sub></em> is the time of the 1st event, and <em>t<sub>2</sub></em> is the time of the 2nd event.</li>
+              <li><strong>Inter-arrival Time (T<sub>i</sub>):</strong> This is the waiting time, or the duration <em>between</em> consecutive events. It is defined as <strong>T<sub>i</sub> = t<sub>i</sub> - t<sub>i-1</sub></strong>. For example, <em>T<sub>2</sub></em> is the time that passes between the 1st and 2nd events (i.e., <em>t<sub>2</sub> - t<sub>1</sub></em>).</li>
+            </ul>
+            <p>This experiment analyzes the properties of these inter-arrival times (T<sub>i</sub>).</p>
+            <!-- /// END OF ADDED SECTION /// -->
+
+            <h4 style="font-weight: 600; font-size: 1.15em;">Procedure</h4>
+            <ol style="list-style: decimal; margin-left: 20px;">
+                <li>Set the <strong>Poisson Rate (\(\lambda\))</strong>, which is the average number of events per second.</li>
+                <li>Choose which inter-arrival time to analyze using the dropdown (e.g., the 1st, 2nd, or 3rd). This selects the index <em>i</em> for T<sub>i</sub>.</li>
+                <li>Select the <strong>Number of Trials</strong> to run. A higher number will produce a more accurate result.</li>
+                <li>Click <strong>"Run Simulation"</strong>. The simulation will run all trials instantly.</li>
+                <li><strong>Analyze the Distribution:</strong> The left chart shows a histogram of the collected T<sub>i</sub> values. Observe how closely the <span style="color: #1e90ff;">blue</span> histogram matches the theoretical <span style="color: #ff9f40;">orange</span> Exponential curve.</li>
+                <li><strong>Analyze Independence:</strong> The right chart plots pairs of consecutive inter-arrival times, <strong>(T<sub>i</sub>, T<sub>i+1</sub>)</strong>. If the points form a random, shapeless cloud with a best-fit line slope near zero, the times are independent.</li>
+            </ol>
+          </div>
+        </div>
+        <br />
+        <section id="page3">
+          <div class="v-datalist-container components-list">
+            <h3 class="v-datalist-title">Inter-arrival Time Simulation</h3>
+            <div class="white-boxed-panel">
+              <div class="controls-container">
+                <div class="field">
+                  <label for="lambda" class="label">Poisson Rate (\(\lambda\)):</label>
+                  <input type="range" id="lambda" min="0.5" max="10" step="0.5" value="2" class="slider" />
+                  <span id="lambdaVal" class="value-display">2.0</span>
+                </div>
+                <div class="field">
+                    <label for="interArrivalTimeIndex" class="label">Inter-arrival Time to Analyze (T<sub>i</sub>):</label>
+                    <div class="select is-fullwidth" style="margin: 0 auto; max-width: 200px;">
+                        <select id="interArrivalTimeIndex">
+                            <option value="1" selected>1st (T₁)</option>
+                            <option value="2">2nd (T₂)</option>
+                            <option value="3">3rd (T₃)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="numTrials" class="label">Number of Trials:</label>
+                    <input type="range" id="numTrials" min="100" max="5000" step="100" value="1000" class="slider" />
+                    <span id="numTrialsVal" class="value-display">1000</span>
+                </div>
+              </div>
+              <div class="buttons is-centered" style="margin-top: 1rem;">
+                <button id="runBtn" class="button is-primary is-medium">Run Simulation</button>
+                <button id="resetBtn" class="button is-danger is-light is-medium">Reset</button>
+              </div>
+            </div>
+            <div class="columns is-desktop">
+              <div class="column">
+                <div class="white-boxed-panel">
+                  <h4 class="v-datalist-subtitle">Distribution Analysis (of T<sub>i</sub>)</h4>
+                  <div class="chart-wrapper" style="height:450px"><canvas id="histogramChart"></canvas></div>
+                </div>
+              </div>
+              <div class="column">
+                <div class="white-boxed-panel">
+                  <h4 class="v-datalist-subtitle">Independence Analysis (T<sub>i</sub> vs T<sub>i+1</sub>)</h4>
+                  <div class="chart-wrapper" style="height:450px"><canvas id="scatterChart"></canvas></div>
+                </div>
+              </div>
+            </div>
+            <div class="white-boxed-panel">
+              <h4 class="v-datalist-subtitle">Observations</h4>
+              <div id="observations" style="padding: 10px; text-align: center;">
+                <p>Adjust the settings and click "Run Simulation" to see the results.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
+  <script src="./js/ind_exp.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "1. Which distribution describes the number of events in a Poisson process over a fixed interval?",
+      "answers": {
+        "a": "Binomial distribution",
+        "b": "Exponential distribution",
+        "c": "Poisson distribution",
+        "d": "Uniform distribution"
+      },
+      "explanations": {
+        "a": "Binomial distribution applies to fixed trials with success/failure outcomes.",
+        "b": "Exponential distribution models the time between events.",
+        "c": "Correct! The number of events in a fixed interval is Poisson distributed. <a href='https://en.wikipedia.org/wiki/Poisson_distribution'>Details here</a>",
+        "d": "Uniform distribution assumes all outcomes are equally likely, which doesn't apply here."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "2. What is a key characteristic of a Poisson process?",
+      "answers": {
+        "a": "Events occur at regular intervals",
+        "b": "Events occur independently over time",
+        "c": "Only one event can occur in total",
+        "d": "Events always follow a normal distribution"
+      },
+      "explanations": {
+        "a": "Poisson processes model random, not regular, events.",
+        "b": "Correct! Events in a Poisson process are independent of one another. <a href='https://en.wikipedia.org/wiki/Poisson_point_process'>Learn more</a>",
+        "c": "Poisson processes can have multiple events over time.",
+        "d": "The Poisson distribution is distinct from the normal distribution."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "3. What is the mean number of events in a Poisson distribution with rate $\\lambda$ over time t?",
+      "answers": {
+        "a": "$\\lambda$",
+        "b": "$\\lambda + t$",
+        "c": "$\\lambda * t$",
+        "d": "$\\lambda / t$"
+      },
+      "explanations": {
+        "a": "$\\lambda$ is the rate per unit time; we must scale it by time.",
+        "b": "Incorrect, mean is not additive in this case.",
+        "c": "Correct! The expected number of events = $\\lambda * t$. <a href='https://mathworld.wolfram.com/PoissonDistribution.html'>Reference</a>",
+        "d": "This is used in different contexts (e.g., average time per event)."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "4. What distribution models the time between two consecutive events in a Poisson process?",
+      "answers": {
+        "a": "Poisson distribution",
+        "b": "Exponential distribution",
+        "c": "Normal distribution",
+        "d": "Gamma distribution"
+      },
+      "explanations": {
+        "a": "Poisson models number of events, not time between them.",
+        "b": "Correct! Inter-arrival times in a Poisson process are exponentially distributed. <a href='https://en.wikipedia.org/wiki/Exponential_distribution'>Read more</a>",
+        "c": "Normal distribution isn't appropriate for modeling waiting times here.",
+        "d": "Gamma is used for the sum of multiple exponential variables, not just one."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "5. Which of the following is NOT an assumption of a Poisson process?",
+      "answers": {
+        "a": "Events occur independently",
+        "b": "The rate $\\lambda$ is constant",
+        "c": "Events can occur simultaneously",
+        "d": "The number of events in non-overlapping intervals is independent"
+      },
+      "explanations": {
+        "a": "Independence is a core property of the process.",
+        "b": "A constant rate $\\lambda$ is essential for a homogeneous Poisson process.",
+        "c": "Correct! In a Poisson process, the probability of two events occurring at exactly the same instant is zero. <a href='https://ocw.mit.edu/courses/6-262-discrete-stochastic-processes-spring-2011/3a19ce0e02d0008877351bfa24f3716a_MIT6_262S11_chap02.pdf'>Source</a>",
+        "d": "This is a valid assumption of the process."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    }
+  ]
+}

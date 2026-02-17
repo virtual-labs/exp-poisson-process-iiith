@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "1. If two independent Poisson processes with rates $\\lambda_1$ and $\\lambda_2$ are merged, what is the rate of the resulting process?",
+      "answers": {
+        "a": "$\\lambda_1$ - $\\lambda_2$",
+        "b": "$\\lambda_1$ × $\\lambda_2$",
+        "c": "$\\lambda_1$ + $\\lambda_2$",
+        "d": "max($\\lambda_1$, $\\lambda_2$)"
+      },
+      "explanations": {
+        "a": "Subtraction is incorrect; this doesn't model merging.",
+        "b": "Multiplying the rates is incorrect for Poisson merging.",
+        "c": "Correct! The merged process has rate $\\lambda_1$ + $\\lambda_2$. <a href='https://en.wikipedia.org/wiki/Poisson_point_process#Operations_on_Poisson_processes'>Reference</a>",
+        "d": "Taking the max doesn't reflect total intensity."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "2. In a Poisson process with rate $\\lambda$, if each event is independently classified as Type A with probability p and Type B with 1-p, what is the rate of the resulting Type A process?",
+      "answers": {
+        "a": "$\\lambda$ / p",
+        "b": "$\\lambda$ × p",
+        "c": "$\\lambda$ - p",
+        "d": "$\\lambda^2$ × p"
+      },
+      "explanations": {
+        "a": "This overestimates the intensity.",
+        "b": "Correct! Splitting results in a Poisson process with rate λ × p for each type. <a href='https://ocw.mit.edu/courses/6-041sc-probabilistic-systems-analysis-and-applied-probability-fall-2013/pages/unit-iii/lecture-14/'>Read more</a>",
+        "c": "Incorrect mathematical operation for intensity.",
+        "d": "Poisson intensity doesn't involve squaring the rate."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "3. Why is a Poisson process suitable for modeling the emission of radioactive particles?",
+      "answers": {
+        "a": "Emissions occur at fixed intervals",
+        "b": "Emissions occur in bursts only",
+        "c": "Emissions are independent and occur randomly over time",
+        "d": "All particles are emitted at the same time"
+      },
+      "explanations": {
+        "a": "Fixed intervals contradict randomness of a Poisson process.",
+        "b": "Poisson processes assume isolated, not bursty, events.",
+        "c": "Correct! Poisson processes are ideal for modeling random, independent emissions. <a href='https://stats.libretexts.org/Bookshelves/Probability_Theory/Probability_Mathematical_Statistics_and_Stochastic_Processes_(Siegrist)/14%3A_The_Poisson_Process#:~:text=The%20Poisson%20process%20is%20one,in%20a%20piece%20of%20material.'>Example</a>",
+        "d": "This would violate the independence assumption."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "4. In the call center, if calls arrive following a Poisson process with $\\lambda$ = 10 calls/hour, what is the expected number of calls in a 30-minute interval?",
+      "answers": {
+        "a": "5",
+        "b": "10",
+        "c": "20",
+        "d": "300"
+      },
+      "explanations": {
+        "a": "Correct! 30 minutes is 0.5 hours, so expected calls = 10 * 0.5 = 5.",
+        "b": "This is for a full hour, not half.",
+        "c": "Overestimation, corresponds to 2 hours.",
+        "d": "Need to convert minutes to hours."
+      },
+      "correctAnswer": "a",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "5. When splitting a Poisson process, the resulting processes are also Poisson. What property must the splitting mechanism satisfy for this to hold?",
+      "answers": {
+        "a": "It must be memoryless",
+        "b": "It must be deterministic",
+        "c": "It must be independent and probabilistic for each event",
+        "d": "It must depend on the time of arrival"
+      },
+      "explanations": {
+        "a": "Memorylessness refers to the exponential distribution, not splitting.",
+        "b": "Deterministic splitting wouldn't preserve Poisson properties.",
+        "c": "Correct! Independent probabilistic splitting ensures each stream remains Poisson. <a href='https://www.probabilitycourse.com/chapter11/11_1_3_merging_and_splitting_poisson_processes.php'>Read here</a>",
+        "d": "This would violate the time-homogeneity of a Poisson process."
+      },
+      "correctAnswer": "c",
+      "difficulty": "intermediate"
+    }
+  ]
+}
