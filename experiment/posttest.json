@@ -2,29 +2,29 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "1. If two independent Poisson processes with rates λ₁ and λ₂ are merged, what is the rate of the resulting process?",
+      "question": "1. If two independent Poisson processes with rates $\\lambda_1$ and $\\lambda_2$ are merged, what is the rate of the resulting process?",
       "answers": {
-        "a": "λ₁ - λ₂",
-        "b": "λ₁ × λ₂",
-        "c": "λ₁ + λ₂",
-        "d": "max(λ₁, λ₂)"
+        "a": "$\\lambda_1$ - $\\lambda_2$",
+        "b": "$\\lambda_1$ × $\\lambda_2$",
+        "c": "$\\lambda_1$ + $\\lambda_2$",
+        "d": "max($\\lambda_1$, $\\lambda_2$)"
       },
       "explanations": {
         "a": "Subtraction is incorrect; this doesn't model merging.",
         "b": "Multiplying the rates is incorrect for Poisson merging.",
-        "c": "Correct! The merged process has rate λ₁ + λ₂. <a href='https://en.wikipedia.org/wiki/Poisson_point_process#Operations_on_Poisson_processes'>Reference</a>",
+        "c": "Correct! The merged process has rate $\\lambda_1$ + $\\lambda_2$. <a href='https://en.wikipedia.org/wiki/Poisson_point_process#Operations_on_Poisson_processes'>Reference</a>",
         "d": "Taking the max doesn't reflect total intensity."
       },
       "correctAnswer": "c",
       "difficulty": "intermediate"
     },
     {
-      "question": "2. In a Poisson process with rate λ, if each event is independently classified as Type A with probability p and Type B with 1-p, what is the rate of the resulting Type A process?",
+      "question": "2. In a Poisson process with rate $\\lambda$, if each event is independently classified as Type A with probability p and Type B with 1-p, what is the rate of the resulting Type A process?",
       "answers": {
-        "a": "λ / p",
-        "b": "λ × p",
-        "c": "λ - p",
-        "d": "λ² × p"
+        "a": "$\\lambda$ / p",
+        "b": "$\\lambda$ × p",
+        "c": "$\\lambda$ - p",
+        "d": "$\\lambda^2$ × p"
       },
       "explanations": {
         "a": "This overestimates the intensity.",
@@ -53,7 +53,7 @@
       "difficulty": "intermediate"
     },
     {
-      "question": "4. In the call center, if calls arrive following a Poisson process with λ = 10 calls/hour, what is the expected number of calls in a 30-minute interval?",
+      "question": "4. In the call center, if calls arrive following a Poisson process with $\\lambda$ = 10 calls/hour, what is the expected number of calls in a 30-minute interval?",
       "answers": {
         "a": "5",
         "b": "10",
